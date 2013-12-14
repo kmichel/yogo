@@ -27,20 +27,28 @@ var yogo = {
         position: {x: 50.5, y: 50.5},
         direction: {x: 0, y: 0},
         speed: 2,
-        radius: 5,
+        radius: 6,
         direction_radius: 10,
         color: '#9cd1e3'
     },
     bots: [
         {
-            position: {x: 200.5, y: 100.5},
-            radius: 5,
-            color: '#a45300'
+            position: {x: 205.5, y: 110.5},
+            radius: 6,
+            speed: 3,
+            color: '#a45300',
+            state: 'resting',
+            cell: null,
+            target_cell: null
         },
         {
-            position: {x: 100.5, y: 200.5},
-            radius: 5,
-            color: '#a45300'
+            position: {x: 110.5, y: 210.5},
+            radius: 6,
+            speed: 3,
+            color: '#a45300',
+            state: 'resting',
+            cell: null,
+            target_cell: null
         }
     ]
 };
