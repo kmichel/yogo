@@ -1,4 +1,6 @@
 function draw_game(game, context) {
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.translate(game.margin, game.margin);
     draw_background(game, context);
     draw_grid(game, context);
     draw_lasers(game.lasers, context);
@@ -7,6 +9,8 @@ function draw_game(game, context) {
     draw_barriers(game.barriers, context);
     draw_bots(game.bots, context);
     draw_player(game.player, context);
+    draw_overlay(game, context);
+    context.translate(-game.margin, -game.margin);
 }
 
 function draw_background(game, context) {
@@ -14,28 +18,54 @@ function draw_background(game, context) {
     context.fillRect(0, 0, game.width + 1, game.height + 1);
 }
 
-function draw_grid(game, context) {
-    context.lineWidth = 1;
-    draw_subgrid(game.width, game.height, game.grid.minor_color, game.grid.minor_spacing, context);
-    draw_subgrid(game.width, game.height, game.grid.major_color, game.grid.major_spacing, context);
+function draw_overlay(game, context) {
+    var left_gradient = context.createLinearGradient(-game.margin, 0, 0, 0);
+    left_gradient.addColorStop(0, game.overlay_color);
+    left_gradient.addColorStop(1, game.overlay_color_2);
+    context.fillStyle = left_gradient;
+    context.fillRect(-game.margin, -game.margin, game.margin, game.height + 2 * game.margin + 1);
+
+    var right_gradient = context.createLinearGradient(game.width + game.margin + 1, 0, game.width, 0);
+    right_gradient.addColorStop(0, game.overlay_color);
+    right_gradient.addColorStop(1, game.overlay_color_2);
+    context.fillStyle = right_gradient;
+    context.fillRect(game.width + game.margin + 1, -game.margin, -game.margin, game.height + 2 * game.margin + 1);
+
+    var top_gradient = context.createLinearGradient(0, -game.margin, 0, 0);
+    top_gradient.addColorStop(0, game.overlay_color);
+    top_gradient.addColorStop(1, game.overlay_color_2);
+    context.fillStyle = top_gradient;
+    context.fillRect(-game.margin, -game.margin, game.width + 2 * game.margin + 1, game.margin);
+
+    var bottom_gradient = context.createLinearGradient(0, game.height + game.margin + 1, 0, game.height);
+    bottom_gradient.addColorStop(0, game.overlay_color);
+    bottom_gradient.addColorStop(1, game.overlay_color_2);
+    context.fillStyle = bottom_gradient;
+    context.fillRect(-game.margin, game.height + game.margin + 1, game.width + 2 * game.margin + 1, -game.margin);
 }
 
-function draw_subgrid(width, height, color, spacing, context) {
+function draw_grid(game, context) {
+    context.lineWidth = 1;
+    draw_subgrid(game, game.width, game.height, game.grid.minor_color, game.grid.minor_spacing, context);
+    draw_subgrid(game, game.width, game.height, game.grid.major_color, game.grid.major_spacing, context);
+}
+
+function draw_subgrid(game, width, height, color, spacing, context) {
     context.strokeStyle = color;
     context.beginPath();
     for (var x = 0; x <= width; x += spacing) {
-        context.moveTo(x + .5, 0);
-        context.lineTo(x + .5, height);
+        context.moveTo(x + .5, -game.margin);
+        context.lineTo(x + .5, height + game.margin);
     }
     for (var y = 0; y <= height; y += spacing) {
-        context.moveTo(0, y + .5);
-        context.lineTo(width, y + .5);
+        context.moveTo(-game.margin, y + .5);
+        context.lineTo(width + game.margin, y + .5);
     }
     for (var i = 0 - height; i <= width + height; i += spacing * 2) {
-        context.moveTo(i + .5, .5);
-        context.lineTo(i + .5 - height, height + .5);
-        context.moveTo(i + .5, .5);
-        context.lineTo(i + .5 + height, height + .5);
+        context.moveTo(i + .5 + game.margin, .5 - game.margin);
+        context.lineTo(i + .5 - height - game.margin, height + .5 + game.margin);
+        context.moveTo(i + .5 - game.margin, .5 - game.margin);
+        context.lineTo(i + .5 + height + game.margin, height + .5 + game.margin);
     }
     context.stroke();
 }

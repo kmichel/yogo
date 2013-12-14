@@ -1,4 +1,9 @@
 body {
     font-family: sans-serif;
     text-align: center;
+    background-color: #1a1e1f;
+    color: #2e3436;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    font-size: 1.4em;
+    -webkit-font-smoothing: antialiased;
 }

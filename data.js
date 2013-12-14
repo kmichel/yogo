@@ -3,11 +3,14 @@ var yogo = {
     tick_fps: 60,
     width: 600,
     height: 400,
-    background_color: '#2e3436',
+    margin: 25,
+    background_color: '#262A2C',
+    overlay_color: 'rgba(26, 30, 31, 1)',
+    overlay_color_2: 'rgba(26, 30, 31, 0)',
     grid: {
-        minor_color: 'rgba(255, 255, 255, 0.05)',
+        minor_color: 'rgba(255, 255, 255, 0.03)',
         minor_spacing: 20,
-        major_color: 'rgba(255, 255, 255, 0.10)',
+        major_color: 'rgba(255, 255, 255, 0.07)',
         major_spacing: 100
     },
     key_map: {
