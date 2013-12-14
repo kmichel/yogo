@@ -75,8 +75,12 @@ function tick_laser(game, laser) {
 }
 
 function tick_bot(game, bot, speed) {
+    if (bot.state == 'dead') {
+        bot.dead_age += 1;
+    }
     if (bot.state == 'dying') {
         fire_pulses_around_bot(game, bot);
+        bot.dead_age = 0;
         bot.state = 'dead';
     }
     if (bot.state == 'resting' || bot.state == 'moving') {

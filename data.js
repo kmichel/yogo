@@ -38,6 +38,7 @@ var yogo = {
     bots: {
         color: '#a45300',
         radius: 6,
+        death_animation_length: 20,
         shooting_zone: {
             color: 'rgba(255, 255, 255, 0.1)',
             radius: 40
@@ -52,7 +53,7 @@ var yogo = {
                 position: {x: 205.5, y: 110.5}
             },
             {
-                position: {x: 110.5, y: 210.5}
+                position: {x: 110.5, y: 200.5}
             }
         ]
     },

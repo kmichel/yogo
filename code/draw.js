@@ -100,24 +100,28 @@ function draw_bots(bots, context) {
     context.lineWidth = 1;
     context.beginPath();
     for (var i = 0; i < bots.list.length; ++i) {
-        if (bots.list[i].state != 'dead') {
-            context.moveTo(bots.list[i].position.x + bots.detection_zone.radius, bots.list[i].position.y);
-            context.arc(bots.list[i].position.x, bots.list[i].position.y, bots.detection_zone.radius, 0, 2 * Math.PI);
-        }
+        var bot = bots.list[i];
+        var ratio = bot.state == 'dead' ? Math.max(0, 1 - bot.dead_age / bots.death_animation_length) : 1;
+        context.moveTo(bot.position.x + ratio * bots.detection_zone.radius, bot.position.y);
+        context.arc(bot.position.x, bot.position.y, ratio * bots.detection_zone.radius, 0, 2 * Math.PI);
     }
     context.stroke();
 
     context.fillStyle = bots.shooting_zone.color;
     context.beginPath();
-    for (i = 0; i < bots.list.length; ++i)
-        if (bots.list[i].state != 'dead')
-            context.arc(bots.list[i].position.x, bots.list[i].position.y, bots.shooting_zone.radius, 0, 2 * Math.PI);
+    for (i = 0; i < bots.list.length; ++i) {
+        bot = bots.list[i];
+        ratio = bot.state == 'dead' ? Math.max(0, 1 - bot.dead_age / bots.death_animation_length) : 1;
+        context.arc(bot.position.x, bot.position.y, ratio * bots.shooting_zone.radius, 0, 2 * Math.PI);
+    }
     context.fill();
 
     context.fillStyle = bots.color;
     context.beginPath();
-    for (i = 0; i < bots.list.length; ++i)
-        context.arc(bots.list[i].position.x, bots.list[i].position.y, bots.radius, 0, 2 * Math.PI);
+    for (i = 0; i < bots.list.length; ++i) {
+        bot = bots.list[i];
+        context.arc(bot.position.x, bot.position.y, bots.radius, 0, 2 * Math.PI);
+    }
     context.fill();
 }
 
