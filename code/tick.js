@@ -8,6 +8,7 @@ function tick_game(game) {
         tick_laser(game, game.lasers.list[i]);
     for (i = 0; i < game.barriers.segments.list.length; ++i)
         tick_segment(game, game.barriers.segments.list[i]);
+    update_segments(game.barriers, game.bots);
     game.tick += 1;
 }
 
@@ -72,14 +73,12 @@ function tick_pulse(game, pulse) {
     var nearest_emitter = get_nearest_item(pulse.position, game.barriers.emitters.list, 2);
     if (nearest_emitter) {
         remove_item(game.barriers.emitters.list, nearest_emitter);
-        update_segments(game.barriers);
         must_delete_pulse = true;
     }
 
     var nearest_reflector = get_nearest_item(pulse.position, game.barriers.reflectors.list, 2);
     if (nearest_reflector) {
         remove_item(game.barriers.reflectors.list, nearest_reflector);
-        update_segments(game.barriers);
         must_delete_pulse = true;
     }
 
@@ -108,7 +107,7 @@ function tick_bot(game, bot, speed) {
     }
     if (bot.state == 'resting' || bot.state == 'moving') {
         if (game.player.state == 'alive') {
-            if (is_distance_less_than(bot.position, game.player.position, game.bots.shooting_zone.radius)) {
+            if (is_distance_less_than(bot.position, game.player.position, game.bots.shooting_zone.radius + game.player.radius)) {
                 game.lasers.list.push({
                     start: {x: bot.position.x, y: bot.position.y},
                     stop: {x: game.player.position.x, y: game.player.position.y},
@@ -120,7 +119,7 @@ function tick_bot(game, bot, speed) {
     }
     if (bot.state == 'resting') {
         if (game.player.state == 'alive') {
-            if (is_distance_less_than(bot.position, game.player.position, game.bots.detection_zone.radius)) {
+            if (is_distance_less_than(bot.position, game.player.position, game.bots.detection_zone.radius + game.player.radius)) {
                 var directions = get_allowed_directions(bot.cell);
                 var min_direction = null;
                 var min_squared_distance = Infinity;

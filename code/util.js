@@ -90,13 +90,19 @@ function get_point_segment_distance(point, start, stop) {
     return Infinity;
 }
 
-function update_segments(barriers) {
+function update_segments(barriers, bots) {
     var segments = [];
     var todo = [];
     for (var i = 0; i < barriers.emitters.list.length; ++i) {
         var emitter = barriers.emitters.list[i];
         todo.push({position: emitter.position, direction: emitter.direction});
     }
+    var colliders = [];
+    for (i = 0; i < barriers.reflectors.list.length; ++i)
+        colliders.push(barriers.reflectors.list[i]);
+    for (i = 0; i < bots.list.length; ++i)
+        colliders.push(bots.list[i]);
+
     for (i = 0; i < todo.length; ++i) {
         var e_x = todo[i].position.x;
         var e_y = todo[i].position.y;
@@ -106,10 +112,10 @@ function update_segments(barriers) {
         var n_x = d_x / length;
         var n_y = d_y / length;
         var nearest_dot = 1000;
-        for (var j = 0; j < barriers.reflectors.list.length; ++j) {
-            var reflector = barriers.reflectors.list[j];
-            var rel_x = reflector.position.x - e_x;
-            var rel_y = reflector.position.y - e_y;
+        for (var j = 0; j < colliders.length; ++j) {
+            var collider = colliders[j];
+            var rel_x = collider.position.x - e_x;
+            var rel_y = collider.position.y - e_y;
             var dot = rel_x * n_x + rel_y * n_y;
             var along_x = dot * n_x;
             var along_y = dot * n_y;
@@ -118,10 +124,12 @@ function update_segments(barriers) {
             var distance = Math.sqrt(across_x * across_x + across_y * across_y);
             if (dot > 0 && dot < nearest_dot && distance < 1) {
                 nearest_dot = dot;
-                todo.push({
-                    position: {x: e_x + nearest_dot * n_x, y: e_y + nearest_dot * n_y},
-                    direction: rotate({x: d_x, y: d_y}, (reflector.clockwise ? -1 : 1) * Math.PI * 0.5)
-                });
+                if (collider.hasOwnProperty('clockwise')) {
+                    todo.push({
+                        position: {x: e_x + nearest_dot * n_x, y: e_y + nearest_dot * n_y},
+                        direction: rotate({x: d_x, y: d_y}, (collider.clockwise ? -1 : 1) * Math.PI * 0.5)
+                    });
+                }
             }
         }
         segments.push({

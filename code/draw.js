@@ -3,9 +3,9 @@ function draw_game(game, context) {
     draw_grid(game, context);
     draw_lasers(game.lasers, context);
     draw_pulses(game.pulses, context);
+    draw_barriers(game.barriers, context);
     draw_bots(game.bots, context);
     draw_player(game.player, context);
-    draw_barriers(game.barriers, context);
 }
 
 function draw_background(game, context) {
@@ -129,7 +129,6 @@ function draw_bots(bots, context) {
 }
 
 function draw_barriers(barriers, context) {
-    update_segments(barriers);
     context.strokeStyle = barriers.segments.color;
     context.lineWidth = 1;
     context.beginPath();
