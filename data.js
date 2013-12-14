@@ -98,15 +98,15 @@ var yogo = {
             list: [
                 {
                     position: {x: 300.5, y: 300.5},
-                    clockwise: true
+                    reflection: 'clockwise'
                 },
                 {
                     position: {x: 500.5, y: 100.5},
-                    clockwise: false
+                    reflection: 'counter-clockwise'
                 },
                 {
                     position: {x: 600.5, y: 200.5},
-                    clockwise: false
+                    reflection: 'counter-clockwise'
                 }
             ]
         },

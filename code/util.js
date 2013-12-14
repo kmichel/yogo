@@ -112,6 +112,7 @@ function update_segments(barriers, bots) {
         var n_x = d_x / length;
         var n_y = d_y / length;
         var nearest_dot = 1000;
+        var nearest_reflection = null;
         for (var j = 0; j < colliders.length; ++j) {
             var collider = colliders[j];
             var rel_x = collider.position.x - e_x;
@@ -124,13 +125,14 @@ function update_segments(barriers, bots) {
             var distance = Math.sqrt(across_x * across_x + across_y * across_y);
             if (dot > 0 && dot < nearest_dot && distance < 1) {
                 nearest_dot = dot;
-                if (collider.hasOwnProperty('clockwise')) {
-                    todo.push({
-                        position: {x: e_x + nearest_dot * n_x, y: e_y + nearest_dot * n_y},
-                        direction: rotate({x: d_x, y: d_y}, (collider.clockwise ? -1 : 1) * Math.PI * 0.5)
-                    });
-                }
+                nearest_reflection = collider.reflection;
             }
+        }
+        if (nearest_reflection) {
+            todo.push({
+                position: {x: e_x + nearest_dot * n_x, y: e_y + nearest_dot * n_y},
+                direction: rotate({x: d_x, y: d_y}, (nearest_reflection == 'clockwise' ? -1 : 1) * Math.PI * 0.5)
+            });
         }
         segments.push({
             start: {x: e_x, y: e_y},
