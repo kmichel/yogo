@@ -1,27 +1,50 @@
-function get_neighbors(game, cell) {
-    var neighbors = [];
-    var cells = game.grid.cells;
+function get_allowed_directions(cell) {
+    var directions = [];
     if (cell.allow_up)
-        neighbors.push(cells[cell.id.y - 1][cell.id.x]);
+        directions.push({y:-1, x:0});
     if (cell.allow_down)
-        neighbors.push(cells[cell.id.y + 1][cell.id.x]);
+        directions.push({y:1, x:0});
     if (cell.allow_left)
-        neighbors.push(cells[cell.id.y][cell.id.x - 1]);
+        directions.push({y:0, x:-1});
     if (cell.allow_right)
-        neighbors.push(cells[cell.id.y][cell.id.x + 1]);
+        directions.push({y:0, x:1});
     if (cell.allow_diagonals) {
         if (cell.allow_up && cell.allow_left)
-            neighbors.push(cells[cell.id.y - 1][cell.id.x - 1]);
+            directions.push({y:-1, x:-1});
         if (cell.allow_up && cell.allow_right)
-            neighbors.push(cells[cell.id.y - 1][cell.id.x + 1]);
+            directions.push({y:-1, x:1});
         if (cell.allow_down && cell.allow_left)
-            neighbors.push(cells[cell.id.y + 1][cell.id.x - 1]);
+            directions.push({y:1, x:-1});
         if (cell.allow_down && cell.allow_right)
-            neighbors.push(cells[cell.id.y + 1][cell.id.x + 1]);
+            directions.push({y:1, x:1});
     }
-    return neighbors;
+    return directions;
 }
 
 function pick_random(array) {
     return array[Math.floor(Math.random() * array.length)];
+}
+
+function is_distance_less_than(a, b, distance) {
+    var delta_x = a.x - b.x;
+    var delta_y = a.y - b.y;
+    return (delta_x * delta_x + delta_y * delta_y) < distance * distance;
+}
+
+function get_nearest_bot_alive(player, bots, radius) {
+    var nearest_bot = null;
+    var min_squared_distance = radius ? radius * radius : Infinity;
+    for (var i = 0; i < bots.list.length; ++i) {
+        var bot = bots.list[i];
+        if (bot.state == 'resting' || bot.state == 'moving') {
+            var dx = bot.position.x - player.position.x;
+            var dy = bot.position.y - player.position.y;
+            var squared_distance = dx * dx + dy * dy;
+            if (squared_distance < min_squared_distance) {
+                min_squared_distance = squared_distance;
+                nearest_bot = bot;
+            }
+        }
+    }
+    return nearest_bot;
 }

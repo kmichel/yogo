@@ -1,4 +1,5 @@
 var yogo = {
+    tick: 0,
     tick_fps: 60,
     width: 600,
     height: 400,
@@ -24,31 +25,48 @@ var yogo = {
         down: false
     },
     player: {
+        can_shoot: true,
         position: {x: 50.5, y: 50.5},
         direction: {x: 0, y: 0},
         speed: 2,
         radius: 6,
+        shooting_radius: 120,
         direction_radius: 10,
-        color: '#9cd1e3'
+        color: '#9cd1e3',
+        state: 'alive'
     },
-    bots: [
-        {
-            position: {x: 205.5, y: 110.5},
-            radius: 6,
-            speed: 3,
-            color: '#a45300',
-            state: 'resting',
-            cell: null,
-            target_cell: null
+    bots: {
+        color: '#a45300',
+        radius: 6,
+        shooting_zone: {
+            color: 'rgba(255, 255, 255, 0.1)',
+            radius: 40
         },
-        {
-            position: {x: 110.5, y: 210.5},
-            radius: 6,
-            speed: 3,
-            color: '#a45300',
-            state: 'resting',
-            cell: null,
-            target_cell: null
-        }
-    ]
+        detection_zone: {
+          color: 'rgba(255, 255, 255, 0.3)',
+            radius: 80
+        },
+        speed: 1,
+        list: [
+            {
+                position: {x: 205.5, y: 110.5}
+            },
+            {
+                position: {x: 110.5, y: 210.5}
+            }
+        ]
+    },
+    pulses: {
+        max_age: 2000,
+        color: '#fff',
+        speed: 0.5,
+        radius: 2,
+        list: []
+    },
+    lasers: {
+        max_age: 20,
+        color: '#fff',
+        width: 3,
+        list: []
+    }
 };

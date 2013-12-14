@@ -1,8 +1,9 @@
 function draw_game(game, context) {
     draw_background(game, context);
     draw_grid(game, context);
-    for (var i = 0; i < game.bots.length; ++i)
-        draw_bot(game.bots[i], context);
+    draw_lasers(game.lasers, context);
+    draw_pulses(game.pulses, context);
+    draw_bots(game.bots, context);
     draw_player(game.player, context);
 }
 
@@ -52,9 +53,54 @@ function draw_player(player, context) {
     context.stroke();
 }
 
-function draw_bot(bot, context) {
-    context.fillStyle = bot.color;
+function draw_lasers(lasers, context) {
+    context.lineCap = 'round';
+    for (var i = 0; i < lasers.list.length; ++i) {
+        var age = lasers.list[i].age / lasers.max_age;
+        context.strokeStyle = 'rgba(255, 255, 255,' + (1 - age) + ')';
+        context.lineWidth = lasers.width * (1 - age);
+        context.beginPath();
+        context.moveTo(lasers.list[i].start.x, lasers.list[i].start.y);
+        context.lineTo(lasers.list[i].stop.x, lasers.list[i].stop.y);
+        context.stroke();
+    }
+    context.opacity = 1;
+}
+
+function draw_pulses(pulses, context) {
+    context.fillStyle = pulses.color;
     context.beginPath();
-    context.arc(bot.position.x, bot.position.y, bot.radius, 0, 2 * Math.PI);
+    for (var i = 0; i < pulses.list.length; ++i) {
+        context.arc(pulses.list[i].position.x, pulses.list[i].position.y, pulses.radius, 0, 2 * Math.PI);
+        context.closePath();
+    }
+    context.fill();
+
+}
+
+function draw_bots(bots, context) {
+    context.strokeStyle = bots.detection_zone.color;
+    context.lineWidth = 1;
+    context.beginPath();
+    for (var i = 0; i < bots.list.length; ++i) {
+        if (bots.list[i].state != 'dead') {
+            context.moveTo(bots.list[i].position.x + bots.detection_zone.radius, bots.list[i].position.y);
+            context.arc(bots.list[i].position.x, bots.list[i].position.y, bots.detection_zone.radius, 0, 2 * Math.PI);
+        }
+    }
+    context.stroke();
+
+    context.fillStyle = bots.shooting_zone.color;
+    context.beginPath();
+    for (i = 0; i < bots.list.length; ++i)
+        if (bots.list[i].state != 'dead')
+            context.arc(bots.list[i].position.x, bots.list[i].position.y, bots.shooting_zone.radius, 0, 2 * Math.PI);
+    context.fill();
+
+    context.fillStyle = bots.color;
+    context.beginPath();
+    for (i = 0; i < bots.list.length; ++i)
+        context.arc(bots.list[i].position.x, bots.list[i].position.y, bots.radius, 0, 2 * Math.PI);
     context.fill();
 }
+
