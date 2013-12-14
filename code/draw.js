@@ -43,14 +43,15 @@ function draw_player(player, context) {
     context.beginPath();
     context.arc(player.position.x, player.position.y, player.radius, 0, 2 * Math.PI);
     context.fill();
-    context.strokeStyle = player.color;
-    context.moveTo(
-        player.position.x + player.radius * player.direction.x,
-        player.position.y + player.radius * player.direction.y);
-    context.lineTo(
-        player.position.x + player.direction_radius * player.direction.x,
-        player.position.y + player.direction_radius * player.direction.y);
-    context.stroke();
+    if (player.nearest_bot_alive) {
+        context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        context.lineWidth = 2;
+        context.lineCap = 'round';
+        context.beginPath();
+        context.moveTo(player.position.x, player.position.y);
+        context.lineTo(player.nearest_bot_alive.position.x, player.nearest_bot_alive.position.y);
+        context.stroke();
+    }
 }
 
 function draw_lasers(lasers, context) {

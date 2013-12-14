@@ -11,16 +11,18 @@ function tick_game(game) {
 
 function tick_player(game, player) {
     if (player.state == 'alive') {
+        if (player.can_shoot)
+            player.nearest_bot_alive = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
         if (game.keys.space && player.can_shoot) {
-            var nearest_bot = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
-            if (nearest_bot) {
+            if (player.nearest_bot_alive) {
                 player.can_shoot = false;
                 game.lasers.list.push({
-                    start: {x: nearest_bot.position.x, y: nearest_bot.position.y},
+                    start: {x: player.nearest_bot_alive.position.x, y: player.nearest_bot_alive.position.y},
                     stop: {x: game.player.position.x, y: game.player.position.y},
                     age: 0
                 });
-                nearest_bot.state = 'dying';
+                player.nearest_bot_alive.state = 'dying';
+                player.nearest_bot_alive = null;
             }
             game.keys.space = false;
         }
