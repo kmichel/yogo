@@ -45,6 +45,22 @@ function get_nearest_bot_alive(position, bots, radius) {
     return nearest_bot;
 }
 
+function get_nearest_item(position, items, radius) {
+    var nearest_item = null;
+    var min_squared_distance = radius ? radius * radius : Infinity;
+    for (var i = 0; i < items.length; ++i) {
+        var item = items[i];
+        var dx = item.position.x - position.x;
+        var dy = item.position.y - position.y;
+        var squared_distance = dx * dx + dy * dy;
+        if (squared_distance < min_squared_distance) {
+            min_squared_distance = squared_distance;
+            nearest_item = item;
+        }
+    }
+    return nearest_item;
+}
+
 function rotate(vector, angle) {
     return {
         x: Math.cos(angle) * vector.x - Math.sin(angle) * vector.y,
@@ -114,4 +130,8 @@ function update_segments(barriers) {
         });
     }
     barriers.segments.list = segments;
+}
+
+function remove_item(array, item) {
+    array.splice(array.indexOf(item), 1);
 }

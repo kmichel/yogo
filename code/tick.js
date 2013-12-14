@@ -62,15 +62,33 @@ function tick_pulse(game, pulse) {
         pulse.position.x += pulse.direction.x / length * game.pulses.speed;
         pulse.position.y += pulse.direction.y / length * game.pulses.speed;
     }
+    var must_delete_pulse = false;
     var nearest_bot = get_nearest_bot_alive(pulse.position, game.bots, 2);
     if (nearest_bot) {
         nearest_bot.state = 'dying';
-        game.pulses.list.splice(game.pulses.list.indexOf(pulse), 1);
-    } else {
-        pulse.age += 1;
-        if (pulse.age > game.pulses.max_age)
-            game.pulses.list.splice(game.pulses.list.indexOf(pulse), 1);
+        must_delete_pulse = true;
     }
+
+    var nearest_emitter = get_nearest_item(pulse.position, game.barriers.emitters.list, 2);
+    if (nearest_emitter) {
+        remove_item(game.barriers.emitters.list, nearest_emitter);
+        update_segments(game.barriers);
+        must_delete_pulse = true;
+    }
+
+    var nearest_reflector = get_nearest_item(pulse.position, game.barriers.reflectors.list, 2);
+    if (nearest_reflector) {
+        remove_item(game.barriers.reflectors.list, nearest_reflector);
+        update_segments(game.barriers);
+        must_delete_pulse = true;
+    }
+
+    pulse.age += 1;
+    if (pulse.age > game.pulses.max_age)
+        must_delete_pulse = true;
+
+    if (must_delete_pulse)
+        remove_item(game.pulses.list, pulse);
 }
 
 function tick_laser(game, laser) {
