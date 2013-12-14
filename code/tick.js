@@ -135,11 +135,28 @@ function tick_bot(game, bot, speed) {
 }
 
 function fire_pulses_around_bot(game, bot) {
-    var directions = get_allowed_directions(bot.cell);
-    for (var i = 0; i < directions.length; ++i)
+    if (bot.target_cell == null) {
+        var directions = get_allowed_directions(bot.cell);
+        for (var i = 0; i < directions.length; ++i)
+            game.pulses.list.push({
+                position: {x: bot.position.x, y: bot.position.y},
+                direction: {x: directions[i].x, y: directions[i].y},
+                age: 0
+            });
+    } else {
+        // The bot is on the line between two cells
+        var dx = bot.target_cell.position.x - bot.cell.position.x;
+        var dy = bot.target_cell.position.y - bot.cell.position.y;
+        var length = Math.sqrt(dx*dx+dy*dy);
         game.pulses.list.push({
             position: {x: bot.position.x, y: bot.position.y},
-            direction: {x: directions[i].x, y: directions[i].y},
+            direction: {x: dx/length, y: dy/length},
             age: 0
         });
+        game.pulses.list.push({
+            position: {x: bot.position.x, y: bot.position.y},
+            direction: {x: -dx/length, y: -dy/length},
+            age: 0
+        });
+    }
 }
