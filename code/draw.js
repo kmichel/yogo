@@ -3,6 +3,7 @@ function draw_game(game, context) {
     draw_grid(game, context);
     draw_lasers(game.lasers, context);
     draw_pulses(game.pulses, context);
+    draw_footsteps(game.footsteps, context);
     draw_barriers(game.barriers, context);
     draw_bots(game.bots, context);
     draw_player(game.player, context);
@@ -169,4 +170,15 @@ function draw_barriers(barriers, context) {
         context.lineTo(right_x, right_y);
     }
     context.fill();
+}
+
+function draw_footsteps(footsteps, context) {
+    context.lineWidth = 1.0001;
+    for (var i = 0; i < footsteps.list.length; ++i) {
+        var footstep = footsteps.list[i];
+        context.strokeStyle = 'rgba(255, 255, 255,' + (0.3 * (1 - Math.pow(footstep.age / footsteps.max_age, 4))) + ')';
+        context.beginPath();
+        context.arc(footstep.position.x, footstep.position.y, footstep.radius, 0, 2 * Math.PI);
+        context.stroke();
+    }
 }

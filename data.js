@@ -33,7 +33,10 @@ var yogo = {
         shooting_radius: 120,
         direction_radius: 10,
         color: '#9cd1e3',
-        state: 'alive'
+        state: 'alive',
+        footstep_interval: 20,
+        distance_since_last_footstep: 0,
+        was_moving: false
     },
     bots: {
         color: '#a45300',
@@ -114,5 +117,11 @@ var yogo = {
             color: '#bef',
             list: []
         }
+    },
+    footsteps: {
+        start_radius: 0,
+        end_radius: 30,
+        max_age: 20,
+        list: []
     }
 };

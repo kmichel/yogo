@@ -1,6 +1,8 @@
 function tick_game(game) {
     tick_player(game, game.player);
-    for (var i = 0; i < game.pulses.list.length; ++i)
+    for (var i = 0; i < game.footsteps.list.length; ++i)
+        tick_footstep(game, game.footsteps.list[i]);
+    for (i = 0; i < game.pulses.list.length; ++i)
         tick_pulse(game, game.pulses.list[i]);
     for (i = 0; i < game.bots.list.length; ++i)
         tick_bot(game, game.bots.list[i], game.bots.speed);
@@ -39,13 +41,25 @@ function tick_player(game, player) {
             x += 1;
         if (game.keys.down)
             y += 1;
+        var is_moving = false;
         if (x != 0 || y != 0) {
             var inverse_length = 1 / Math.sqrt(x * x + y * y);
             player.direction.x = x * inverse_length;
             player.direction.y = y * inverse_length;
             player.position.x += x * inverse_length * player.speed;
             player.position.y += y * inverse_length * player.speed;
+            player.distance_since_last_footstep += player.speed;
+            is_moving = true;
         }
+        if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving)) {
+            game.footsteps.list.push({
+                position: {x: player.position.x, y: player.position.y},
+                radius: game.footsteps.start_radius,
+                age: 0
+            });
+            player.distance_since_last_footstep = 0;
+        }
+        player.was_moving = is_moving;
     }
 }
 
@@ -119,22 +133,26 @@ function tick_bot(game, bot, speed) {
     }
     if (bot.state == 'resting') {
         if (game.player.state == 'alive') {
-            if (is_distance_less_than(bot.position, game.player.position, game.bots.detection_zone.radius + game.player.radius)) {
-                var directions = get_allowed_directions(bot.cell);
-                var min_direction = null;
-                var min_squared_distance = Infinity;
-                for (var i = 0; i < directions.length; ++i) {
-                    var direction = directions[i];
-                    var dx = bot.position.x + direction.x * game.grid.minor_spacing - game.player.position.x;
-                    var dy = bot.position.y + direction.y * game.grid.minor_spacing - game.player.position.y;
-                    var squared_distance = dx * dx + dy * dy;
-                    if (squared_distance < min_squared_distance) {
-                        min_squared_distance = squared_distance;
-                        min_direction = direction;
+            for (var i = 0; i < game.footsteps.list.length; ++i) {
+                var footstep = game.footsteps.list[i];
+                if (is_distance_less_than(bot.position, footstep.position, game.bots.detection_zone.radius + footstep.radius)) {
+                    var directions = get_allowed_directions(bot.cell);
+                    var min_direction = null;
+                    var min_squared_distance = Infinity;
+                    for (var j = 0; j < directions.length; ++j) {
+                        var direction = directions[j];
+                        var dx = bot.position.x + direction.x * game.grid.minor_spacing - footstep.position.x;
+                        var dy = bot.position.y + direction.y * game.grid.minor_spacing - footstep.position.y;
+                        var squared_distance = dx * dx + dy * dy;
+                        if (squared_distance < min_squared_distance) {
+                            min_squared_distance = squared_distance;
+                            min_direction = direction;
+                        }
                     }
+                    bot.target_cell = game.grid.cells[bot.cell.id.y + min_direction.y][bot.cell.id.x + min_direction.x];
+                    bot.state = 'moving';
+                    break;
                 }
-                bot.target_cell = game.grid.cells[bot.cell.id.y + min_direction.y][bot.cell.id.x + min_direction.x];
-                bot.state = 'moving';
             }
         }
     } else if (bot.state == 'moving') {
@@ -187,4 +205,12 @@ function tick_segment(game, segment) {
     var distance = get_point_segment_distance(game.player.position, segment.start, segment.stop);
     if (distance < game.player.radius)
         game.player.state = 'dead';
+}
+
+function tick_footstep(game, footstep) {
+    footstep.age += 1;
+    var ratio = Math.pow(footstep.age / game.footsteps.max_age, 1 / 2);
+    footstep.radius = game.footsteps.start_radius + ratio * (game.footsteps.end_radius - game.footsteps.start_radius);
+    if (footstep.age >= game.footsteps.max_age)
+        remove_item(game.footsteps.list, footstep);
 }
