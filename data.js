@@ -1,5 +1,7 @@
 var yogo = {
     tick_fps: 60,
+    width: 600,
+    height: 400,
     background_color: '#2e3436',
     grid: {
         minor_color: 'rgba(255, 255, 255, 0.05)',
@@ -22,7 +24,7 @@ var yogo = {
         down: false
     },
     player: {
-        position: {x: 50, y: 50},
+        position: {x: 50.5, y: 50.5},
         direction: {x: 0, y: 0},
         speed: 2,
         radius: 5,
@@ -31,12 +33,12 @@ var yogo = {
     },
     bots: [
         {
-            position: {x: 200, y: 100},
+            position: {x: 200.5, y: 100.5},
             radius: 5,
             color: '#a45300'
         },
         {
-            position: {x: 100, y: 200},
+            position: {x: 100.5, y: 200.5},
             radius: 5,
             color: '#a45300'
         }

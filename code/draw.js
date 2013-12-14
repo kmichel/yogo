@@ -8,18 +8,16 @@ function draw_game(game, context) {
 
 function draw_background(game, context) {
     context.fillStyle = game.background_color;
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+    context.fillRect(0, 0, game.width + 1, game.height + 1);
 }
 
 function draw_grid(game, context) {
     context.lineWidth = 1;
-    draw_subgrid(game.grid.minor_color, game.grid.minor_spacing, context);
-    draw_subgrid(game.grid.major_color, game.grid.major_spacing, context);
+    draw_subgrid(game.width, game.height, game.grid.minor_color, game.grid.minor_spacing, context);
+    draw_subgrid(game.width, game.height, game.grid.major_color, game.grid.major_spacing, context);
 }
 
-function draw_subgrid(color, spacing, context) {
-    var width = context.canvas.width;
-    var height = context.canvas.height;
+function draw_subgrid(width, height, color, spacing, context) {
     context.strokeStyle = color;
     context.beginPath();
     for (var x = 0; x <= width; x += spacing) {
@@ -31,10 +29,10 @@ function draw_subgrid(color, spacing, context) {
         context.lineTo(width, y + .5);
     }
     for (var i = 0 - height; i <= width + height; i += spacing * 2) {
-        context.moveTo(i + 1.5, .5);
-        context.lineTo(i + 1.5 - height, height + .5);
-        context.moveTo(i + 1.5, .5);
-        context.lineTo(i + 1.5 + height, height + .5);
+        context.moveTo(i + .5, .5);
+        context.lineTo(i + .5 - height, height + .5);
+        context.moveTo(i + .5, .5);
+        context.lineTo(i + .5 + height, height + .5);
     }
     context.stroke();
 }
