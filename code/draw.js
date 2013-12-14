@@ -68,32 +68,30 @@ function draw_lasers(lasers, context) {
 }
 
 function draw_pulses(pulses, context) {
-    context.strokeStyle = pulses.color;
     context.lineWidth = 1;
-    context.beginPath();
-    var length = 6;
-    var steps = 10;
-    var phases = 6;
+    var length = pulses.length;
+    var steps = pulses.steps;
     for (var i = 0; i < pulses.list.length; ++i) {
         var pulse = pulses.list[i];
+        context.strokeStyle = 'rgba(255, 255, 255,' + (1 - Math.pow(pulse.age / pulses.max_age, 4)) + ')';
+        context.beginPath();
         var normalizer = 1 / Math.sqrt(pulse.direction.x * pulse.direction.x + pulse.direction.y * pulse.direction.y);
-        var start_x = pulse.position.x - pulse.direction.x * length * normalizer;
-        var start_y = pulse.position.y - pulse.direction.y * length * normalizer;
-        var stop_x = pulse.position.x + pulse.direction.x * length * normalizer;
-        var stop_y = pulse.position.y + pulse.direction.y * length * normalizer;
+        var start_x = pulse.position.x - pulse.direction.x * 0.5 * length * normalizer;
+        var start_y = pulse.position.y - pulse.direction.y * 0.5 * length * normalizer;
+        var stop_x = pulse.position.x + pulse.direction.x * 0.5 * length * normalizer;
+        var stop_y = pulse.position.y + pulse.direction.y * 0.5 * length * normalizer;
         context.moveTo(start_x, start_y);
         for (var j = 0; j < steps; ++j) {
             var ratio = j / steps;
-            var amplitude = 2 * Math.sin(0.5 * pulse.age + phases * Math.PI * j / steps) * Math.cos(Math.PI * j / steps - 0.5 * Math.PI);
+            var amplitude = 2 * Math.sin(0.5 * pulse.age + pulses.phases * Math.PI * j / steps) * Math.cos(Math.PI * j / steps - 0.5 * Math.PI);
             var nx = amplitude * pulse.direction.y * normalizer;
             var ny = amplitude * -pulse.direction.x * normalizer;
             var x = start_x + (stop_x - start_x) * ratio + nx;
             var y = start_y + (stop_y - start_y) * ratio + ny;
             context.lineTo(x, y);
         }
+        context.stroke();
     }
-    context.stroke();
-
 }
 
 function draw_bots(bots, context) {

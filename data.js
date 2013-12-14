@@ -57,10 +57,11 @@ var yogo = {
         ]
     },
     pulses: {
-        max_age: 2000,
-        color: '#fff',
+        max_age: 200,
+        phases: 6,
+        length: 12,
+        steps: 10,
         speed: 1,
-        radius: 2,
         list: []
     },
     lasers: {
