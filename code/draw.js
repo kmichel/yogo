@@ -112,6 +112,7 @@ function draw_bots(bots, context) {
     for (i = 0; i < bots.list.length; ++i) {
         bot = bots.list[i];
         ratio = bot.state == 'dead' ? Math.max(0, 1 - bot.dead_age / bots.death_animation_length) : 1;
+        context.moveTo(bot.position.x + ratio * bots.shooting_zone.radius, bot.position.y);
         context.arc(bot.position.x, bot.position.y, ratio * bots.shooting_zone.radius, 0, 2 * Math.PI);
     }
     context.fill();
@@ -120,6 +121,7 @@ function draw_bots(bots, context) {
     context.beginPath();
     for (i = 0; i < bots.list.length; ++i) {
         bot = bots.list[i];
+        context.moveTo(bot.position.x + ratio * bots.radius, bot.position.y);
         context.arc(bot.position.x, bot.position.y, bots.radius, 0, 2 * Math.PI);
     }
     context.fill();

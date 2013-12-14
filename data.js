@@ -54,6 +54,12 @@ var yogo = {
             },
             {
                 position: {x: 110.5, y: 200.5}
+            },
+            {
+                position: {x: 310.5, y: 200.5}
+            },
+            {
+                position: {x: 510.5, y: 200.5}
             }
         ]
     },
