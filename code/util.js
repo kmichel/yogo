@@ -31,14 +31,14 @@ function is_distance_less_than(a, b, distance) {
     return (delta_x * delta_x + delta_y * delta_y) < distance * distance;
 }
 
-function get_nearest_bot_alive(player, bots, radius) {
+function get_nearest_bot_alive(position, bots, radius) {
     var nearest_bot = null;
     var min_squared_distance = radius ? radius * radius : Infinity;
     for (var i = 0; i < bots.list.length; ++i) {
         var bot = bots.list[i];
         if (bot.state == 'resting' || bot.state == 'moving') {
-            var dx = bot.position.x - player.position.x;
-            var dy = bot.position.y - player.position.y;
+            var dx = bot.position.x - position.x;
+            var dy = bot.position.y - position.y;
             var squared_distance = dx * dx + dy * dy;
             if (squared_distance < min_squared_distance) {
                 min_squared_distance = squared_distance;

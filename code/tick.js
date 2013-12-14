@@ -12,7 +12,7 @@ function tick_game(game) {
 function tick_player(game, player) {
     if (player.state == 'alive') {
         if (game.keys.space && player.can_shoot) {
-            var nearest_bot = get_nearest_bot_alive(game.player, game.bots, player.shooting_radius);
+            var nearest_bot = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
             if (nearest_bot) {
                 player.can_shoot = false;
                 game.lasers.list.push({
@@ -58,6 +58,9 @@ function tick_pulse(game, pulse) {
         pulse.position.x += pulse.direction.x / length * game.pulses.speed;
         pulse.position.y += pulse.direction.y / length * game.pulses.speed;
     }
+    var nearest_bot = get_nearest_bot_alive(pulse.position, game.bots, 2);
+    if (nearest_bot)
+        nearest_bot.state = 'dying';
     pulse.age += 1;
     if (pulse.age > game.pulses.max_age)
         game.pulses.list.splice(game.pulses.list.indexOf(pulse), 1);

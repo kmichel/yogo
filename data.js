@@ -59,7 +59,7 @@ var yogo = {
     pulses: {
         max_age: 2000,
         color: '#fff',
-        speed: 0.5,
+        speed: 1,
         radius: 2,
         list: []
     },
