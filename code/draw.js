@@ -68,13 +68,31 @@ function draw_lasers(lasers, context) {
 }
 
 function draw_pulses(pulses, context) {
-    context.fillStyle = pulses.color;
+    context.strokeStyle = pulses.color;
+    context.lineWidth = 1;
     context.beginPath();
+    var length = 6;
+    var steps = 10;
+    var phases = 6;
     for (var i = 0; i < pulses.list.length; ++i) {
-        context.arc(pulses.list[i].position.x, pulses.list[i].position.y, pulses.radius, 0, 2 * Math.PI);
-        context.closePath();
+        var pulse = pulses.list[i];
+        var normalizer = 1 / Math.sqrt(pulse.direction.x * pulse.direction.x + pulse.direction.y * pulse.direction.y);
+        var start_x = pulse.position.x - pulse.direction.x * length * normalizer;
+        var start_y = pulse.position.y - pulse.direction.y * length * normalizer;
+        var stop_x = pulse.position.x + pulse.direction.x * length * normalizer;
+        var stop_y = pulse.position.y + pulse.direction.y * length * normalizer;
+        context.moveTo(start_x, start_y);
+        for (var j = 0; j < steps; ++j) {
+            var ratio = j / steps;
+            var amplitude = 2 * Math.sin(0.5 * pulse.age + phases * Math.PI * j / steps) * Math.cos(Math.PI * j / steps - 0.5 * Math.PI);
+            var nx = amplitude * pulse.direction.y * normalizer;
+            var ny = amplitude * -pulse.direction.x * normalizer;
+            var x = start_x + (stop_x - start_x) * ratio + nx;
+            var y = start_y + (stop_y - start_y) * ratio + ny;
+            context.lineTo(x, y);
+        }
     }
-    context.fill();
+    context.stroke();
 
 }
 
