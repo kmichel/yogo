@@ -3,7 +3,7 @@ var yogo = {
     tick_fps: 60,
     width: 600,
     height: 400,
-    margin: 25,
+    margin: 85,
     background_color: '#262A2C',
     overlay_color: 'rgba(26, 30, 31, 1)',
     overlay_color_2: 'rgba(26, 30, 31, 0)',

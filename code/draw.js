@@ -5,11 +5,11 @@ function draw_game(game, context) {
     draw_grid(game, context);
     draw_lasers(game.lasers, context);
     draw_pulses(game.pulses, context);
-    draw_footsteps(game.footsteps, context);
     draw_barriers(game.barriers, context);
+    draw_overlay(game, context);
+    draw_footsteps(game.footsteps, context);
     draw_player(game.player, context);
     draw_bots(game.bots, context);
-    draw_overlay(game, context);
     context.translate(-game.margin, -game.margin);
 }
 
