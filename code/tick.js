@@ -6,6 +6,8 @@ function tick_game(game) {
         tick_bot(game, game.bots.list[i], game.bots.speed);
     for (i = 0; i < game.lasers.list.length; ++i)
         tick_laser(game, game.lasers.list[i]);
+    for (i = 0; i < game.barriers.segments.list.length; ++i)
+        tick_segment(game, game.barriers.segments.list[i]);
     game.tick += 1;
 }
 
@@ -162,4 +164,10 @@ function fire_pulses_around_bot(game, bot) {
             age: 0
         });
     }
+}
+
+function tick_segment(game, segment) {
+    var distance = get_point_segment_distance(game.player.position, segment.start, segment.stop);
+    if (distance < game.player.radius)
+        game.player.state = 'dead';
 }

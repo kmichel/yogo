@@ -52,6 +52,28 @@ function rotate(vector, angle) {
     }
 }
 
+function get_point_segment_distance(point, start, stop) {
+    var b_x = start.x;
+    var b_y = start.y;
+    var d_x = stop.x - start.x;
+    var d_y = stop.y - start.y;
+    var length = Math.sqrt(d_x * d_x + d_y * d_y);
+    var n_x = d_x / length;
+    var n_y = d_y / length;
+    var rel_x = point.x - b_x;
+    var rel_y = point.y - b_y;
+    var dot = rel_x * n_x + rel_y * n_y;
+    if (dot > 0 && dot < length) {
+        var along_x = dot * n_x;
+        var along_y = dot * n_y;
+        var across_x = rel_x - along_x;
+        var across_y = rel_y - along_y;
+        return Math.sqrt(across_x * across_x + across_y * across_y);
+    }
+    // TODO: handle endpoints correctly
+    return Infinity;
+}
+
 function update_segments(barriers) {
     var segments = [];
     var todo = [];
