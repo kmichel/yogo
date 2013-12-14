@@ -47,22 +47,29 @@ function tick_player(game, player) {
         if (game.keys.down)
             y += 1;
         var is_moving = false;
+        player.is_running = !game.keys.shift;
+        var speed = player.is_running ? game.player.run_speed : game.player.walk_speed;
         if (x != 0 || y != 0) {
             var inverse_length = 1 / Math.sqrt(x * x + y * y);
             player.direction.x = x * inverse_length;
             player.direction.y = y * inverse_length;
-            player.position.x += x * inverse_length * player.speed;
-            player.position.y += y * inverse_length * player.speed;
-            player.distance_since_last_footstep += player.speed;
+            player.position.x += x * inverse_length * speed;
+            player.position.y += y * inverse_length * speed;
+            player.distance_since_last_footstep += speed;
             is_moving = true;
         }
-        if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving)) {
-            game.footsteps.list.push({
-                position: {x: player.position.x, y: player.position.y},
-                radius: game.footsteps.start_radius,
-                age: 0
-            });
-            player.distance_since_last_footstep = 0;
+        if (player.is_running) {
+            if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving)) {
+                game.footsteps.list.push({
+                    position: {x: player.position.x, y: player.position.y},
+                    radius: game.footsteps.start_radius,
+                    age: 0
+                });
+                player.distance_since_last_footstep = 0;
+            }
+        } else {
+            // Allow 'run-toggling' but make it dangerous
+            player.distance_since_last_footstep *= 0.9;
         }
         player.was_moving = is_moving;
     }

@@ -14,6 +14,7 @@ var yogo = {
         major_spacing: 100
     },
     key_map: {
+        16: 'shift',
         32: 'space',
         37: 'left',
         38: 'up',
@@ -21,6 +22,7 @@ var yogo = {
         40: 'down'
     },
     keys: {
+        shift: false,
         space: false,
         left: false,
         up: false,
@@ -31,11 +33,13 @@ var yogo = {
         can_shoot: true,
         position: {x: 50.5, y: 50.5},
         direction: {x: 0, y: 0},
-        speed: 2,
+        walk_speed: 0.5,
+        run_speed: 2,
         radius: 6,
         shooting_radius: 120,
         direction_radius: 10,
-        color: '#9cd1e3',
+        run_color: 'rgba(156, 209, 227, 1.0)',
+        walk_color: 'rgba(156, 209, 227, 0.5)',
         state: 'alive',
         footstep_interval: 20,
         distance_since_last_footstep: 0,

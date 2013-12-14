@@ -71,7 +71,7 @@ function draw_subgrid(game, width, height, color, spacing, context) {
 }
 
 function draw_player(player, context) {
-    context.fillStyle = player.color;
+    context.fillStyle = player.is_running ? player.run_color : player.walk_color;
     context.beginPath();
     context.arc(player.position.x, player.position.y, player.radius, 0, 2 * Math.PI);
     context.fill();
