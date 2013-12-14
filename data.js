@@ -38,12 +38,14 @@ var yogo = {
         radius: 6,
         shooting_radius: 120,
         direction_radius: 10,
+        aim_color: 'rgba(255, 255, 255, 0.6)',
         run_color: 'rgba(156, 209, 227, 1.0)',
         walk_color: 'rgba(156, 209, 227, 0.5)',
         state: 'alive',
         footstep_interval: 20,
         distance_since_last_footstep: 0,
         was_moving: false,
+        was_aiming: false,
         age: 0
     },
     bots: {

@@ -23,7 +23,7 @@ function tick_player(game, player) {
     if (player.state == 'alive') {
         if (player.can_shoot)
             player.nearest_bot_alive = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
-        if (game.keys.space && player.can_shoot) {
+        if (player.was_aiming && !game.keys.space && player.can_shoot) {
             if (player.nearest_bot_alive) {
                 player.can_shoot = false;
                 game.lasers.list.push({
@@ -34,8 +34,8 @@ function tick_player(game, player) {
                 player.nearest_bot_alive.state = 'dying';
                 player.nearest_bot_alive = null;
             }
-            game.keys.space = false;
         }
+        player.was_aiming = game.keys.space;
         var x = 0;
         var y = 0;
         if (game.keys.left)

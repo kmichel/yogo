@@ -72,7 +72,7 @@ function draw_subgrid(game, width, height, color, spacing, context) {
 
 function draw_player(player, context) {
     if (player.state == 'alive' && player.nearest_bot_alive) {
-        context.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        context.strokeStyle = player.aim_color;
         context.lineWidth = 2;
         context.lineCap = 'round';
         context.setLineDash([1, 6]);
