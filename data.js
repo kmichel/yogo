@@ -44,7 +44,7 @@ var yogo = {
             radius: 40
         },
         detection_zone: {
-          color: 'rgba(255, 255, 255, 0.3)',
+            color: 'rgba(255, 255, 255, 0.3)',
             radius: 80
         },
         speed: 1,
@@ -76,5 +76,43 @@ var yogo = {
         color: '#fff',
         width: 3,
         list: []
+    },
+    barriers: {
+        emitters: {
+            color: '#bef',
+            size: 5,
+            list: [
+                {
+                    direction: {x: 1, y: 1},
+                    position: {x: 200.5, y: 200.5}
+                },
+                {
+                    direction: {x: 1, y: 0},
+                    position: {x: 40.5, y: 300.5}
+                }
+            ]
+        },
+        reflectors: {
+            color: '#bef',
+            size: 6,
+            list: [
+                {
+                    position: {x: 300.5, y: 300.5},
+                    clockwise: true
+                },
+                {
+                    position: {x: 500.5, y: 100.5},
+                    clockwise: false
+                },
+                {
+                    position: {x: 600.5, y: 200.5},
+                    clockwise: false
+                }
+            ]
+        },
+        segments: {
+            color: '#bef',
+            list: []
+        }
     }
 };

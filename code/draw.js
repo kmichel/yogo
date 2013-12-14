@@ -5,6 +5,7 @@ function draw_game(game, context) {
     draw_pulses(game.pulses, context);
     draw_bots(game.bots, context);
     draw_player(game.player, context);
+    draw_barriers(game.barriers, context);
 }
 
 function draw_background(game, context) {
@@ -127,3 +128,46 @@ function draw_bots(bots, context) {
     context.fill();
 }
 
+function draw_barriers(barriers, context) {
+    update_segments(barriers);
+    context.strokeStyle = barriers.segments.color;
+    context.lineWidth = 1;
+    context.beginPath();
+    for (var i = 0; i < barriers.segments.list.length; ++i) {
+        var segment = barriers.segments.list[i];
+        context.moveTo(segment.start.x, segment.start.y);
+        context.lineTo(segment.stop.x, segment.stop.y);
+    }
+    context.stroke();
+
+    context.strokeStyle = barriers.reflectors.color;
+    context.beginPath();
+    for (i = 0; i < barriers.reflectors.list.length; ++i) {
+        var reflector = barriers.reflectors.list[i];
+        context.moveTo(reflector.position.x + barriers.reflectors.size, reflector.position.y);
+        context.lineTo(reflector.position.x, reflector.position.y + barriers.reflectors.size);
+        context.lineTo(reflector.position.x - barriers.reflectors.size, reflector.position.y);
+        context.lineTo(reflector.position.x, reflector.position.y - barriers.reflectors.size);
+        context.lineTo(reflector.position.x + barriers.reflectors.size, reflector.position.y);
+    }
+    context.stroke();
+
+    context.fillStyle = barriers.emitters.color;
+    context.beginPath();
+    for (i = 0; i < barriers.emitters.list.length; ++i) {
+        emitter = barriers.emitters.list[i];
+        var angle = Math.atan2(emitter.direction.y, emitter.direction.x);
+        var left_x = emitter.position.x + Math.cos(angle) * -1 - Math.sin(angle) * barriers.emitters.size;
+        var left_y = emitter.position.y + Math.sin(angle) * -1 + Math.cos(angle) * barriers.emitters.size;
+
+        var right_x = emitter.position.x + Math.cos(angle) * -1 - Math.sin(angle) * -barriers.emitters.size;
+        var right_y = emitter.position.y + Math.sin(angle) * -1 + Math.cos(angle) * -barriers.emitters.size;
+
+        var front_x = emitter.position.x + emitter.direction.x * barriers.emitters.size;
+        var front_y = emitter.position.y + emitter.direction.y * barriers.emitters.size;
+        context.moveTo(left_x, left_y);
+        context.lineTo(front_x, front_y);
+        context.lineTo(right_x, right_y);
+    }
+    context.fill();
+}

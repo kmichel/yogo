@@ -39,6 +39,7 @@ function init_game(game, canvas_id) {
     init_grid_cells(game);
     for (var i = 0; i < game.bots.list.length; ++i)
         init_bot(game, game.bots.list[i]);
+    update_segments(game.barriers);
 
     (function draw_loop() {
         draw_game(game, context);

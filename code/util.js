@@ -1,28 +1,24 @@
 function get_allowed_directions(cell) {
     var directions = [];
     if (cell.allow_up)
-        directions.push({y:-1, x:0});
+        directions.push({y: -1, x: 0});
     if (cell.allow_down)
-        directions.push({y:1, x:0});
+        directions.push({y: 1, x: 0});
     if (cell.allow_left)
-        directions.push({y:0, x:-1});
+        directions.push({y: 0, x: -1});
     if (cell.allow_right)
-        directions.push({y:0, x:1});
+        directions.push({y: 0, x: 1});
     if (cell.allow_diagonals) {
         if (cell.allow_up && cell.allow_left)
-            directions.push({y:-1, x:-1});
+            directions.push({y: -1, x: -1});
         if (cell.allow_up && cell.allow_right)
-            directions.push({y:-1, x:1});
+            directions.push({y: -1, x: 1});
         if (cell.allow_down && cell.allow_left)
-            directions.push({y:1, x:-1});
+            directions.push({y: 1, x: -1});
         if (cell.allow_down && cell.allow_right)
-            directions.push({y:1, x:1});
+            directions.push({y: 1, x: 1});
     }
     return directions;
-}
-
-function pick_random(array) {
-    return array[Math.floor(Math.random() * array.length)];
 }
 
 function is_distance_less_than(a, b, distance) {
@@ -47,4 +43,53 @@ function get_nearest_bot_alive(position, bots, radius) {
         }
     }
     return nearest_bot;
+}
+
+function rotate(vector, angle) {
+    return {
+        x: Math.cos(angle) * vector.x - Math.sin(angle) * vector.y,
+        y: Math.sin(angle) * vector.x + Math.cos(angle) * vector.y
+    }
+}
+
+function update_segments(barriers) {
+    var segments = [];
+    var todo = [];
+    for (var i = 0; i < barriers.emitters.list.length; ++i) {
+        var emitter = barriers.emitters.list[i];
+        todo.push({position: emitter.position, direction: emitter.direction});
+    }
+    for (i = 0; i < todo.length; ++i) {
+        var e_x = todo[i].position.x;
+        var e_y = todo[i].position.y;
+        var d_x = todo[i].direction.x;
+        var d_y = todo[i].direction.y;
+        var length = Math.sqrt(d_x * d_x + d_y * d_y);
+        var n_x = d_x / length;
+        var n_y = d_y / length;
+        var nearest_dot = 1000;
+        for (var j = 0; j < barriers.reflectors.list.length; ++j) {
+            var reflector = barriers.reflectors.list[j];
+            var rel_x = reflector.position.x - e_x;
+            var rel_y = reflector.position.y - e_y;
+            var dot = rel_x * n_x + rel_y * n_y;
+            var along_x = dot * n_x;
+            var along_y = dot * n_y;
+            var across_x = rel_x - along_x;
+            var across_y = rel_y - along_y;
+            var distance = Math.sqrt(across_x * across_x + across_y * across_y);
+            if (dot > 0 && dot < nearest_dot && distance < 1) {
+                nearest_dot = dot;
+                todo.push({
+                    position: {x: e_x + nearest_dot * n_x, y: e_y + nearest_dot * n_y},
+                    direction: rotate({x: d_x, y: d_y}, (reflector.clockwise ? -1 : 1) * Math.PI * 0.5)
+                });
+            }
+        }
+        segments.push({
+            start: {x: e_x, y: e_y},
+            stop: {x: e_x + nearest_dot * n_x, y: e_y + nearest_dot * n_y}
+        });
+    }
+    barriers.segments.list = segments;
 }
