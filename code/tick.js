@@ -1,17 +1,22 @@
 function tick_game(game) {
     tick_player(game, game.player);
-    for (var i = 0; i < game.footsteps.list.length; ++i)
-        tick_footstep(game, game.footsteps.list[i]);
-    for (i = 0; i < game.pulses.list.length; ++i)
-        tick_pulse(game, game.pulses.list[i]);
-    for (i = 0; i < game.bots.list.length; ++i)
-        tick_bot(game, game.bots.list[i], game.bots.speed);
-    for (i = 0; i < game.lasers.list.length; ++i)
-        tick_laser(game, game.lasers.list[i]);
-    for (i = 0; i < game.barriers.segments.list.length; ++i)
-        tick_segment(game, game.barriers.segments.list[i]);
+    tick_list(tick_footstep, game, game.footsteps.list);
+    tick_list(tick_pulse, game, game.pulses.list);
+    tick_list(tick_bot, game, game.bots.list);
+    tick_list(tick_laser, game, game.lasers.list);
+    tick_list(tick_segment, game, game.barriers.segments.list);
     update_segments(game.barriers, game.bots);
     game.tick += 1;
+}
+
+function tick_list(callback, game, list) {
+    for (var i = 0; i < list.length; ++i) {
+        var must_delete_item = callback(game, list[i]);
+        if (must_delete_item) {
+            list.splice(i, 1);
+            --i;
+        }
+    }
 }
 
 function tick_player(game, player) {
@@ -100,17 +105,15 @@ function tick_pulse(game, pulse) {
     if (pulse.age > game.pulses.max_age)
         must_delete_pulse = true;
 
-    if (must_delete_pulse)
-        remove_item(game.pulses.list, pulse);
+    return must_delete_pulse;
 }
 
 function tick_laser(game, laser) {
     laser.age += 1;
-    if (laser.age >= game.lasers.max_age)
-        game.lasers.list.splice(game.lasers.list.indexOf(laser), 1);
+    return laser.age >= game.lasers.max_age;
 }
 
-function tick_bot(game, bot, speed) {
+function tick_bot(game, bot) {
     if (bot.state == 'dead') {
         bot.dead_age += 1;
     }
@@ -161,17 +164,18 @@ function tick_bot(game, bot, speed) {
         var delta_x = target_x - bot.position.x;
         var delta_y = target_y - bot.position.y;
         var delta_length = Math.sqrt(delta_x * delta_x + delta_y * delta_y);
-        if (delta_length <= speed) {
+        if (delta_length <= game.bots.speed) {
             bot.position.x = target_x;
             bot.position.y = target_y;
             bot.cell = bot.target_cell;
             bot.target_cell = null;
             bot.state = 'resting';
         } else {
-            bot.position.x += delta_x * speed / delta_length;
-            bot.position.y += delta_y * speed / delta_length;
+            bot.position.x += delta_x * game.bots.speed / delta_length;
+            bot.position.y += delta_y * game.bots.speed / delta_length;
         }
     }
+    return false;
 }
 
 function fire_pulses_around_bot(game, bot) {
@@ -205,12 +209,12 @@ function tick_segment(game, segment) {
     var distance = get_point_segment_distance(game.player.position, segment.start, segment.stop);
     if (distance < game.player.radius)
         game.player.state = 'dead';
+    return false;
 }
 
 function tick_footstep(game, footstep) {
     footstep.age += 1;
     var ratio = Math.pow(footstep.age / game.footsteps.max_age, 1 / 2);
     footstep.radius = game.footsteps.start_radius + ratio * (game.footsteps.end_radius - game.footsteps.start_radius);
-    if (footstep.age >= game.footsteps.max_age)
-        remove_item(game.footsteps.list, footstep);
+    return footstep.age >= game.footsteps.max_age;
 }
