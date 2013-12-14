@@ -61,11 +61,14 @@ function tick_pulse(game, pulse) {
         pulse.position.y += pulse.direction.y / length * game.pulses.speed;
     }
     var nearest_bot = get_nearest_bot_alive(pulse.position, game.bots, 2);
-    if (nearest_bot)
+    if (nearest_bot) {
         nearest_bot.state = 'dying';
-    pulse.age += 1;
-    if (pulse.age > game.pulses.max_age)
         game.pulses.list.splice(game.pulses.list.indexOf(pulse), 1);
+    } else {
+        pulse.age += 1;
+        if (pulse.age > game.pulses.max_age)
+            game.pulses.list.splice(game.pulses.list.indexOf(pulse), 1);
+    }
 }
 
 function tick_laser(game, laser) {
@@ -147,15 +150,15 @@ function fire_pulses_around_bot(game, bot) {
         // The bot is on the line between two cells
         var dx = bot.target_cell.position.x - bot.cell.position.x;
         var dy = bot.target_cell.position.y - bot.cell.position.y;
-        var length = Math.sqrt(dx*dx+dy*dy);
+        var length = Math.sqrt(dx * dx + dy * dy);
         game.pulses.list.push({
             position: {x: bot.position.x, y: bot.position.y},
-            direction: {x: dx/length, y: dy/length},
+            direction: {x: dx / length, y: dy / length},
             age: 0
         });
         game.pulses.list.push({
             position: {x: bot.position.x, y: bot.position.y},
-            direction: {x: -dx/length, y: -dy/length},
+            direction: {x: -dx / length, y: -dy / length},
             age: 0
         });
     }
