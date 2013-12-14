@@ -27,8 +27,8 @@ function tick_player(game, player) {
             if (player.nearest_bot_alive) {
                 player.can_shoot = false;
                 game.lasers.list.push({
-                    start: {x: player.nearest_bot_alive.position.x, y: player.nearest_bot_alive.position.y},
-                    stop: {x: game.player.position.x, y: game.player.position.y},
+                    start: {x: game.player.position.x, y: game.player.position.y},
+                    stop: {x: player.nearest_bot_alive.position.x, y: player.nearest_bot_alive.position.y},
                     age: 0
                 });
                 player.nearest_bot_alive.state = 'dying';
@@ -72,6 +72,7 @@ function tick_player(game, player) {
             player.distance_since_last_footstep *= 0.9;
         }
         player.was_moving = is_moving;
+        player.age += 1;
     }
 }
 
@@ -117,6 +118,8 @@ function tick_pulse(game, pulse) {
 
 function tick_laser(game, laser) {
     laser.age += 1;
+    laser.start.x = laser.start.x * 0.9 + laser.stop.x * 0.1;
+    laser.start.y = laser.start.y * 0.9 + laser.stop.y * 0.1;
     return laser.age >= game.lasers.max_age;
 }
 

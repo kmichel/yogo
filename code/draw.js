@@ -7,8 +7,8 @@ function draw_game(game, context) {
     draw_pulses(game.pulses, context);
     draw_footsteps(game.footsteps, context);
     draw_barriers(game.barriers, context);
-    draw_bots(game.bots, context);
     draw_player(game.player, context);
+    draw_bots(game.bots, context);
     draw_overlay(game, context);
     context.translate(-game.margin, -game.margin);
 }
@@ -71,19 +71,27 @@ function draw_subgrid(game, width, height, color, spacing, context) {
 }
 
 function draw_player(player, context) {
+    if (player.state == 'alive' && player.nearest_bot_alive) {
+        context.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        context.lineWidth = 2;
+        context.lineCap = 'round';
+        context.setLineDash([1, 6]);
+        context.lineDashOffset = -player.age / 5;
+        context.beginPath();
+        var dx = player.nearest_bot_alive.position.x - player.position.x;
+        var dy = player.nearest_bot_alive.position.y - player.position.y;
+        var length = Math.sqrt(dx * dx + dy * dy);
+        var nx = dx * player.radius / length;
+        var ny = dy * player.radius / length;
+        context.moveTo(player.position.x + nx, player.position.y + ny);
+        context.lineTo(player.nearest_bot_alive.position.x, player.nearest_bot_alive.position.y);
+        context.stroke();
+        context.setLineDash([]);
+    }
     context.fillStyle = player.is_running ? player.run_color : player.walk_color;
     context.beginPath();
     context.arc(player.position.x, player.position.y, player.radius, 0, 2 * Math.PI);
     context.fill();
-    if (player.nearest_bot_alive) {
-        context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        context.lineWidth = 2;
-        context.lineCap = 'round';
-        context.beginPath();
-        context.moveTo(player.position.x, player.position.y);
-        context.lineTo(player.nearest_bot_alive.position.x, player.nearest_bot_alive.position.y);
-        context.stroke();
-    }
 }
 
 function draw_lasers(lasers, context) {

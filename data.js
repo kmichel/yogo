@@ -43,7 +43,8 @@ var yogo = {
         state: 'alive',
         footstep_interval: 20,
         distance_since_last_footstep: 0,
-        was_moving: false
+        was_moving: false,
+        age: 0
     },
     bots: {
         color: '#a45300',
@@ -82,7 +83,7 @@ var yogo = {
         list: []
     },
     lasers: {
-        max_age: 20,
+        max_age: 50,
         color: '#fff',
         width: 3,
         list: []

@@ -35,6 +35,9 @@ function init_bot(game, bot) {
 function init_game(game, canvas_id) {
     var canvas = document.getElementById(canvas_id);
     var context = canvas.getContext('2d');
+    if (!context.setLineDash)
+        context.setLineDash = function () {
+        };
 
     init_grid_cells(game);
     for (var i = 0; i < game.bots.list.length; ++i)
