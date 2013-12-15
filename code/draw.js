@@ -10,6 +10,7 @@ function draw_game(game, context) {
     draw_footsteps(game.footsteps, context);
     draw_player(game.player, context);
     draw_bots(game.bots, context);
+    draw_exit(game.exit, context);
     context.translate(-game.margin, -game.margin);
 }
 
@@ -219,4 +220,12 @@ function draw_footsteps(footsteps, context) {
         context.arc(footstep.position.x, footstep.position.y, footstep.radius, 0, 2 * Math.PI);
         context.stroke();
     }
+}
+
+function draw_exit(exit, context) {
+    context.strokeStyle = exit.state == 'open' ? exit.open_color : exit.closed_color;
+    context.lineWidth = 2;
+    context.beginPath();
+    context.arc(exit.position.x, exit.position.y, exit.radius, 0, 2 * Math.PI);
+    context.stroke();
 }

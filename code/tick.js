@@ -6,7 +6,9 @@ function tick_game(game) {
     tick_list(tick_laser, game, game.lasers.list);
     tick_list(tick_segment, game, game.barriers.segments.list);
     update_segments(game.barriers, game.bots);
+    tick_exit(game, game.exit);
     game.tick += 1;
+
 }
 
 function tick_list(callback, game, list) {
@@ -20,7 +22,22 @@ function tick_list(callback, game, list) {
 }
 
 function tick_player(game, player) {
-    if (player.state == 'alive') {
+    if (game.state == 'level_complete') {
+        var dx = game.exit.position.x - player.position.x;
+        var dy = game.exit.position.y - player.position.y;
+        if (dx != 0 || dx != 0) {
+            var length = Math.sqrt(dx * dx + dy * dy);
+            if (length > player.walk_speed) {
+                player.position.x += dx * player.walk_speed / length;
+                player.position.y += dy * player.walk_speed / length;
+            } else {
+                player.position.x = game.exit.position.x;
+                player.position.y = game.exit.position.y;
+                play_sound('level_complete');
+            }
+        }
+    }
+    if (player.state == 'alive' && game.state == 'playing') {
         if (player.can_shoot)
             player.nearest_bot_alive = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
         if (player.was_aiming && !game.keys.space && player.can_shoot) {
@@ -243,4 +260,22 @@ function tick_footstep(game, footstep) {
     var ratio = Math.pow(footstep.age / game.footsteps.max_age, 1 / 2);
     footstep.radius = game.footsteps.start_radius + ratio * (game.footsteps.end_radius - game.footsteps.start_radius);
     return footstep.age >= game.footsteps.max_age;
+}
+
+function tick_exit(game, exit) {
+    var exit_state = 'open';
+    for (var i = 0; i < game.bots.list.length; ++i) {
+        var bot = game.bots.list[i];
+        if (bot.state != 'dead') {
+            exit_state = 'closed';
+            break;
+        }
+    }
+    if (exit.state == 'closed' && exit_state == 'open') {
+        play_sound('exit_open');
+        exit.state = 'open';
+    }
+    if (exit.state == 'open' && is_distance_less_than(exit.position, game.player.position, exit.radius - game.player.radius + 2)) {
+        game.state = 'level_complete';
+    }
 }
