@@ -79,15 +79,19 @@ function get_point_segment_distance(point, start, stop) {
     var rel_x = point.x - b_x;
     var rel_y = point.y - b_y;
     var dot = rel_x * n_x + rel_y * n_y;
-    if (dot > 0 && dot < length) {
+    if (dot <= 0)
+        return Math.sqrt(rel_x * rel_x + rel_y * rel_y);
+    else if (dot > 0 && dot < length) {
         var along_x = dot * n_x;
         var along_y = dot * n_y;
         var across_x = rel_x - along_x;
         var across_y = rel_y - along_y;
         return Math.sqrt(across_x * across_x + across_y * across_y);
+    } else {
+        var rel_end_x = point.x - stop.x;
+        var rel_end_y = point.y - stop.y;
+        return Math.sqrt(rel_end_x * rel_end_x + rel_end_y * rel_end_y);
     }
-    // TODO: handle endpoints correctly
-    return Infinity;
 }
 
 function update_segments(barriers, bots) {
