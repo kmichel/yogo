@@ -102,6 +102,8 @@ function update_segments(barriers, bots) {
         todo.push({position: emitter.position, direction: emitter.direction});
     }
     var colliders = [];
+    for (i = 0; i < barriers.emitters.list.length; ++i)
+        colliders.push(barriers.emitters.list[i]);
     for (i = 0; i < barriers.reflectors.list.length; ++i)
         colliders.push(barriers.reflectors.list[i]);
     for (i = 0; i < bots.list.length; ++i)
