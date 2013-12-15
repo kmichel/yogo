@@ -12,6 +12,7 @@ function draw_game(game, context) {
     draw_bots(game.bots, context);
     draw_exit(game.exit, context);
     draw_text(game, game.text, context);
+    draw_buttons(game, context);
     context.translate(-game.margin, -game.margin);
 }
 
@@ -254,5 +255,38 @@ function draw_text(game, text, context) {
         context.fillText(text, game.width * .5, game.height - game.grid.minor_spacing * 1.75 + 1);
         context.fillStyle = 'rgba(255, 255, 255,' + (0.7 * opacity) + ')';
         context.fillText(text, game.width * .5, game.height - game.grid.minor_spacing * 1.75);
+    }
+}
+
+function draw_buttons(game, context) {
+    var is_any_button_hovered = false;
+    for (var i = 0; i < game.buttons.list.length; ++i) {
+        var button = game.buttons.list[i];
+        if (button.state != 'resting')
+            is_any_button_hovered = true;
+        draw_box(
+            button.rect.x, button.rect.y, button.rect.width, button.rect.height,
+            button.state == 'resting' ? 0.1 : 1, game.images[button.image], context);
+    }
+    var expected_cursor = is_any_button_hovered ? 'pointer' : null;
+    // This reduces styles recalculation
+    if (context.canvas.style.cursor != expected_cursor)
+        context.canvas.style.cursor = expected_cursor;
+}
+
+function draw_box(x, y, width, height, opacity, image, context) {
+    context.fillStyle = 'rgba(0, 0, 0, ' + (0.35 * opacity) + ')';
+    context.beginPath();
+    context.rect(x + 1, y + 1, width - 1, height - 1);
+    context.fill();
+    context.strokeStyle = 'rgba(255, 255, 255,' + (0.07 * opacity) + ')';
+    context.lineWidth = 1;
+    context.beginPath();
+    context.rect(x + .5, y + .5, width, height);
+    context.stroke();
+    if (image.state == 'loaded') {
+        context.globalAlpha = Math.min(0.7, Math.max(0.2, opacity));
+        context.drawImage(image.element, x + 1, y + 1);
+        context.globalAlpha = 1;
     }
 }

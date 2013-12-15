@@ -91,6 +91,18 @@ function init_game(game, canvas_id) {
         if (game.sounds.hasOwnProperty(sound_name))
             load_sound(game.sounds[sound_name], sound_name);
 
+    for (var image_name in game.images)
+        if (game.images.hasOwnProperty(image_name)) {
+            (function (image) {
+                image.element = new Image();
+                image.state = 'loading';
+                image.element.onload = function () {
+                    image.state = 'loaded';
+                };
+                image.element.src = image.url;
+            })(game.images[image_name]);
+        }
+
     (function draw_loop() {
         draw_game(game, context);
         // TODO: add Polyfill
@@ -113,6 +125,21 @@ function init_game(game, canvas_id) {
 
     document.addEventListener('keydown', get_key_handler(true));
     document.addEventListener('keyup', get_key_handler(false));
+
+    canvas.addEventListener('mousemove', function (event) {
+        game.cursor.position.x = event.offsetX - game.margin - 2;
+        game.cursor.position.y = event.offsetY - game.margin - 2;
+    });
+
+    canvas.addEventListener('mousedown', function (event) {
+        if (event.button == 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey)
+            game.cursor.pressed = true;
+    });
+
+    document.addEventListener('mouseup', function (event) {
+        if (event.button == 0)
+            game.cursor.pressed = false;
+    });
 }
 
 init_game(yogo, 'yogo');

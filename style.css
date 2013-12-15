@@ -17,3 +17,10 @@ h1 {
     letter-spacing: 20px;
     text-indent: 20px;
 }
+
+canvas {
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+}

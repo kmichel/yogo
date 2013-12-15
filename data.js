@@ -12,6 +12,10 @@ var yogo = {
     hints: {
         list: []
     },
+    cursor: {
+        pressed: false,
+        position: {x: -1, y: -1}
+    },
     background_color: '#262A2C',
     overlay_color: 'rgba(26, 30, 31, 1)',
     overlay_color_2: 'rgba(26, 30, 31, 0)',
@@ -127,5 +131,38 @@ var yogo = {
         end_radius: 30,
         max_age: 20,
         list: []
+    },
+    images: {
+        icon_restart: {
+            url: 'images/icon_restart.png'
+        },
+        icon_toggle_sound: {
+            url: 'images/icon_toggle_sound.png'
+        },
+        icon_select_level: {
+            url: 'images/icon_select_level.png'
+        }
+    },
+    buttons: {
+        list: [
+            {
+                action: 'restart',
+                image: 'icon_restart',
+                state: 'resting',
+                rect: {x: 600, y: 0, width: 40, height: 40}
+            },
+            {
+                action: 'toggle_sound',
+                image: 'icon_toggle_sound',
+                state: 'resting',
+                rect: {x: 600, y: 40, width: 40, height: 40}
+            },
+            {
+                action: 'select_level',
+                image: 'icon_select_level',
+                state: 'resting',
+                rect: {x: 600, y: 80, width: 40, height: 40}
+            }
+        ]
     }
 };

@@ -8,6 +8,7 @@ function tick_game(game) {
     update_segments(game.barriers, game.bots);
     tick_hints(game, game.hints);
     tick_exit(game, game.exit);
+    tick_list(tick_button, game, game.buttons.list);
     tick_game_state(game);
 }
 
@@ -317,10 +318,31 @@ function tick_exit(game, exit) {
         }
     }
     if (exit.state == 'closed' && exit_state == 'open') {
-        play_sound('exit_open');
+        if (game.bots.list.length > 0)
+            play_sound('exit_open');
         exit.state = 'open';
     }
     if (exit.state == 'open' && is_distance_less_than(exit.position, game.player.position, exit.radius - game.player.radius + 2)) {
         game.state = 'level_complete';
     }
+}
+
+function tick_button(game, button) {
+    if (is_point_in_rect(game.cursor.position, button.rect)) {
+        if (game.cursor.pressed)
+            button.state = 'pressed';
+        else {
+            if (button.state == 'pressed') {
+                if (button.action == 'restart')
+                    init_level(game, game.levels[game.current_level]);
+                else if (button.action == 'toggle_sound') {
+                    // TODO
+                } else if (button.action == 'select_level') {
+                    // TODO
+                }
+            }
+            button.state = 'hovered';
+        }
+    } else
+        button.state = 'resting';
 }
