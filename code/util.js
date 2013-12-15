@@ -116,6 +116,7 @@ function update_segments(barriers, bots) {
         var n_x = d_x / length;
         var n_y = d_y / length;
         var nearest_dot = 1000;
+        var epsilon = 0.0001;
         var nearest_reflection = null;
         for (var j = 0; j < colliders.length; ++j) {
             var collider = colliders[j];
@@ -127,7 +128,7 @@ function update_segments(barriers, bots) {
             var across_x = rel_x - along_x;
             var across_y = rel_y - along_y;
             var distance = Math.sqrt(across_x * across_x + across_y * across_y);
-            if (dot > 0 && dot < nearest_dot && distance < 1) {
+            if (dot > epsilon && dot < nearest_dot && distance < 1) {
                 nearest_dot = dot;
                 nearest_reflection = collider.reflection;
             }
