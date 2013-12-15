@@ -8,6 +8,9 @@ var yogo = {
     current_level: 0,
     levels: [],
     text: "",
+    hints: {
+        list: []
+    },
     background_color: '#262A2C',
     overlay_color: 'rgba(26, 30, 31, 1)',
     overlay_color_2: 'rgba(26, 30, 31, 0)',

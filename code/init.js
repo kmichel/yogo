@@ -34,14 +34,17 @@ function init_bot(game, bot) {
 
 function init_level(game, level) {
     game.state = 'playing';
-    game.text = level.text;
     game.player.state = 'alive';
     game.exit.state = 'closed';
     game.player.position = {x: level.player.position.x, y: level.player.position.y};
     game.exit.position = {x: level.exit.position.x, y: level.exit.position.y};
+    game.hints.list = [];
+    for (var i = 0; i < level.hints.length; ++i)
+        game.hints.list.push(level.hints[i]);
     game.bots.list = [];
-    for (var i = 0; i < level.bots.length; ++i)
+    for (i = 0; i < level.bots.length; ++i)
         game.bots.list.push({
+            is_deaf: level.bots[i].is_deaf,
             position: {x: level.bots[i].position.x, y: level.bots[i].position.y}
         });
     game.barriers.emitters.list = [];

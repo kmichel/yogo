@@ -6,6 +6,7 @@ function tick_game(game) {
     tick_list(tick_laser, game, game.lasers.list);
     tick_list(tick_segment, game, game.barriers.segments.list);
     update_segments(game.barriers, game.bots);
+    tick_hints(game, game.hints);
     tick_exit(game, game.exit);
     game.tick += 1;
 
@@ -175,7 +176,7 @@ function tick_bot(game, bot) {
         }
     }
     if (bot.state == 'resting') {
-        if (game.player.state == 'alive') {
+        if (game.player.state == 'alive' && !bot.is_deaf) {
             for (var i = 0; i < game.footsteps.list.length; ++i) {
                 var footstep = game.footsteps.list[i];
                 if (is_distance_less_than(bot.position, footstep.position, game.bots.detection_zone.radius + footstep.radius)) {
@@ -262,6 +263,19 @@ function tick_footstep(game, footstep) {
     var ratio = Math.pow(footstep.age / game.footsteps.max_age, 1 / 2);
     footstep.radius = game.footsteps.start_radius + ratio * (game.footsteps.end_radius - game.footsteps.start_radius);
     return footstep.age >= game.footsteps.max_age;
+}
+
+function tick_hints(game, hints) {
+    var p_x = game.player.position.x;
+    var p_y = game.player.position.y;
+    game.text = null;
+    for (var i = 0; i < hints.list.length; ++i) {
+        var hint = hints.list[i];
+        if (p_x >= hint.rect.x && p_x <= hint.rect.x + hint.rect.width
+            && p_y >= hint.rect.y && p_y <= hint.rect.y + hint.rect.height) {
+            game.text = hint.text;
+        }
+    }
 }
 
 function tick_exit(game, exit) {
