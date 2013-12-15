@@ -5,6 +5,8 @@ var yogo = {
     height: 400,
     margin: 85,
     state: 'playing',
+    current_level: 0,
+    levels: [],
     background_color: '#262A2C',
     overlay_color: 'rgba(26, 30, 31, 1)',
     overlay_color_2: 'rgba(26, 30, 31, 0)',
@@ -81,20 +83,7 @@ var yogo = {
             radius: 80
         },
         speed: 1,
-        list: [
-            {
-                position: {x: 205.5, y: 110.5}
-            },
-            {
-                position: {x: 110.5, y: 200.5}
-            },
-            {
-                position: {x: 310.5, y: 200.5}
-            },
-            {
-                position: {x: 510.5, y: 200.5}
-            }
-        ]
+        list: []
     },
     pulses: {
         max_age: 200,
@@ -114,34 +103,12 @@ var yogo = {
         emitters: {
             color: '#bef',
             size: 5,
-            list: [
-                {
-                    direction: {x: 1, y: 1},
-                    position: {x: 200.5, y: 200.5}
-                },
-                {
-                    direction: {x: 1, y: 0},
-                    position: {x: 40.5, y: 300.5}
-                }
-            ]
+            list: []
         },
         reflectors: {
             color: '#bef',
             size: 6,
-            list: [
-                {
-                    position: {x: 300.5, y: 300.5},
-                    reflection: 'clockwise'
-                },
-                {
-                    position: {x: 500.5, y: 100.5},
-                    reflection: 'counter-clockwise'
-                },
-                {
-                    position: {x: 600.5, y: 200.5},
-                    reflection: 'counter-clockwise'
-                }
-            ]
+            list: []
         },
         segments: {
             color: '#bef',

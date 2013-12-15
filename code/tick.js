@@ -34,6 +34,8 @@ function tick_player(game, player) {
                 player.position.x = game.exit.position.x;
                 player.position.y = game.exit.position.y;
                 play_sound('level_complete');
+                game.current_level += 1;
+                init_level(game, game.levels[game.current_level]);
             }
         }
     }

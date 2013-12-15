@@ -32,6 +32,33 @@ function init_bot(game, bot) {
     bot.target_cell = game.grid.cells[cell_y][cell_x];
 }
 
+function init_level(game, level) {
+    game.state = 'playing';
+    game.player.state = 'alive';
+    game.player.position = {x: level.player.position.x, y: level.player.position.y};
+    game.exit.position = {x: level.exit.position.x, y: level.exit.position.y};
+    game.bots.list = [];
+    for (var i = 0; i < level.bots.length; ++i)
+        game.bots.list.push({
+            position: {x: level.bots[i].position.x, y: level.bots[i].position.y}
+        });
+    game.barriers.emitters.list = [];
+    for (i = 0; i < level.barriers.emitters.length; ++i)
+        game.barriers.emitters.list.push({
+            position: {x: level.barriers.emitters[i].position.x, y: level.barriers.emitters[i].position.y},
+            direction: {x: level.barriers.emitters[i].direction.x, y: level.barriers.emitters[i].direction.y}
+        });
+    game.barriers.reflectors.list = [];
+    for (i = 0; i < level.barriers.reflectors.length; ++i)
+        game.barriers.reflectors.list.push({
+            position: {x: level.barriers.reflectors[i].position.x, y: level.barriers.reflectors[i].position.y},
+            reflection: level.barriers.reflectors[i].reflection
+        });
+    for (i = 0; i < game.bots.list.length; ++i)
+        init_bot(game, game.bots.list[i]);
+    update_segments(game.barriers, game.bots);
+}
+
 function init_game(game, canvas_id) {
     var canvas = document.getElementById(canvas_id);
     var context = canvas.getContext('2d');
@@ -40,9 +67,7 @@ function init_game(game, canvas_id) {
         };
 
     init_grid_cells(game);
-    for (var i = 0; i < game.bots.list.length; ++i)
-        init_bot(game, game.bots.list[i]);
-    update_segments(game.barriers, game.bots);
+    init_level(game, game.levels[game.current_level]);
 
     for (var sound_name in game.sounds)
         if (game.sounds.hasOwnProperty(sound_name))
