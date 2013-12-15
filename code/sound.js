@@ -1,13 +1,22 @@
 var sounds = {};
+var sound_active = true;
 var audioContext = null;
 
 function play_sound(name) {
-    if (audioContext && name in sounds) {
+    if (sound_active && audioContext && name in sounds) {
         var source = audioContext.createBufferSource();
         source.buffer = sounds[name];
         source.connect(audioContext.destination);
         source.noteOn(0);
     }
+}
+
+function is_sound_active() {
+    return sound_active;
+}
+
+function set_sound_active(active) {
+    sound_active = active;
 }
 
 if (window.AudioContext || window.webkitAudioContext) {

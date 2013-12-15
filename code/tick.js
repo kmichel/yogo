@@ -336,7 +336,8 @@ function tick_button(game, button) {
                 if (button.action == 'restart')
                     init_level(game, game.levels[game.current_level]);
                 else if (button.action == 'toggle_sound') {
-                    // TODO
+                    set_sound_active(!is_sound_active());
+                    button.image = is_sound_active() ? 'icon_toggle_sound' : 'icon_toggle_sound_off';
                 } else if (button.action == 'select_level') {
                     // TODO
                 }

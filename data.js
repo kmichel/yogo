@@ -139,6 +139,9 @@ var yogo = {
         icon_toggle_sound: {
             url: 'images/icon_toggle_sound.png'
         },
+        icon_toggle_sound_off: {
+            url: 'images/icon_toggle_sound_off.png'
+        },
         icon_select_level: {
             url: 'images/icon_select_level.png'
         }
