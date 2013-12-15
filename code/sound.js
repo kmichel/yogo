@@ -7,7 +7,10 @@ function play_sound(name) {
         var source = audioContext.createBufferSource();
         source.buffer = sounds[name];
         source.connect(audioContext.destination);
-        source.noteOn(0);
+        if (source.start)
+            source.start(0);
+        else if (source.noteOn)
+            source.noteOn(0);
     }
 }
 
