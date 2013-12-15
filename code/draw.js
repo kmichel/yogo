@@ -13,6 +13,7 @@ function draw_game(game, context) {
     draw_exit(game.exit, context);
     draw_text(game, game.text, context);
     draw_buttons(game, context);
+    draw_restart(game, context);
     context.translate(-game.margin, -game.margin);
 }
 
@@ -276,6 +277,19 @@ function draw_buttons(game, context) {
         context.canvas.style.cursor = expected_cursor;
 }
 
+function draw_restart(game, context) {
+    if (game.state == 'level_failed') {
+        draw_box(140, 180, 320, 40, 1.0, null, context);
+        context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab' monospace";
+        context.textAlign = 'center';
+        context.textBaseline = 'alphabetic';
+        context.fillStyle = 'rgba(0, 0, 0, ' + (0.8) + ')';
+        context.fillText('Press R to restart.', game.width * .5, 205);
+        context.fillStyle = 'rgba(255, 255, 255,' + (0.7) + ')';
+        context.fillText('Press R to restart.', game.width * .5, 205);
+    }
+}
+
 function draw_box(x, y, width, height, opacity, image, context) {
     context.fillStyle = 'rgba(0, 0, 0, ' + (0.35 * opacity) + ')';
     context.beginPath();
@@ -286,7 +300,7 @@ function draw_box(x, y, width, height, opacity, image, context) {
     context.beginPath();
     context.rect(x + .5, y + .5, width, height);
     context.stroke();
-    if (image.state == 'loaded') {
+    if (image && image.state == 'loaded') {
         context.globalAlpha = Math.min(0.7, Math.max(0.2, opacity));
         context.drawImage(image.element, x + 1, y + 1);
         context.globalAlpha = 1;
