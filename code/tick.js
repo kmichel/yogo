@@ -31,6 +31,7 @@ function tick_player(game, player) {
                     stop: {x: player.nearest_bot_alive.position.x, y: player.nearest_bot_alive.position.y},
                     age: 0
                 });
+                play_sound('laser');
                 player.nearest_bot_alive.state = 'dying';
                 player.nearest_bot_alive = null;
             }
@@ -60,6 +61,8 @@ function tick_player(game, player) {
         }
         if (player.is_running) {
             if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving)) {
+                play_sound(game.footsteps.sound_cycle == 0 ? 'footstep_1' : 'footstep_2');
+                game.footsteps.sound_cycle = (game.footsteps.sound_cycle + 1) % 2;
                 game.footsteps.list.push({
                     position: {x: player.position.x, y: player.position.y},
                     radius: game.footsteps.start_radius,
@@ -100,12 +103,14 @@ function tick_pulse(game, pulse) {
     var nearest_emitter = get_nearest_item(pulse.position, game.barriers.emitters.list, 2);
     if (nearest_emitter) {
         remove_item(game.barriers.emitters.list, nearest_emitter);
+        play_sound('barrier_broken');
         must_delete_pulse = true;
     }
 
     var nearest_reflector = get_nearest_item(pulse.position, game.barriers.reflectors.list, 2);
     if (nearest_reflector) {
         remove_item(game.barriers.reflectors.list, nearest_reflector);
+        play_sound('barrier_broken');
         must_delete_pulse = true;
     }
 
@@ -140,6 +145,10 @@ function tick_bot(game, bot) {
                     stop: {x: game.player.position.x, y: game.player.position.y},
                     age: 0
                 });
+                play_sound('laser');
+                setTimeout(function () {
+                    play_sound('player_death');
+                }, 50);
                 game.player.state = 'dead';
             }
         }
@@ -189,6 +198,7 @@ function tick_bot(game, bot) {
 }
 
 function fire_pulses_around_bot(game, bot) {
+    play_sound('pulse');
     if (bot.target_cell == null) {
         var directions = get_allowed_directions(bot.cell);
         for (var i = 0; i < directions.length; ++i)
@@ -216,9 +226,13 @@ function fire_pulses_around_bot(game, bot) {
 }
 
 function tick_segment(game, segment) {
-    var distance = get_point_segment_distance(game.player.position, segment.start, segment.stop);
-    if (distance < game.player.radius)
-        game.player.state = 'dead';
+    if (game.player.state != 'dead') {
+        var distance = get_point_segment_distance(game.player.position, segment.start, segment.stop);
+        if (distance < game.player.radius) {
+            play_sound('player_burned');
+            game.player.state = 'dead';
+        }
+    }
     return false;
 }
 

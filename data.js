@@ -7,6 +7,15 @@ var yogo = {
     background_color: '#262A2C',
     overlay_color: 'rgba(26, 30, 31, 1)',
     overlay_color_2: 'rgba(26, 30, 31, 0)',
+    sounds: {
+        'barrier_broken': 'sounds/barrier_broken.wav',
+        'footstep_1': 'sounds/footstep_1.wav',
+        'footstep_2': 'sounds/footstep_2.wav',
+        'laser': 'sounds/laser.wav',
+        'player_burned': 'sounds/player_burned.wav',
+        'player_death': 'sounds/player_death.wav',
+        'pulse': 'sounds/pulse.wav'
+    },
     grid: {
         minor_color: 'rgba(255, 255, 255, 0.03)',
         minor_spacing: 20,
@@ -132,6 +141,7 @@ var yogo = {
         start_radius: 0,
         end_radius: 30,
         max_age: 20,
+        sound_cycle: 0,
         list: []
     }
 };

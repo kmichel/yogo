@@ -44,6 +44,10 @@ function init_game(game, canvas_id) {
         init_bot(game, game.bots.list[i]);
     update_segments(game.barriers, game.bots);
 
+    for (var sound_name in game.sounds)
+        if (game.sounds.hasOwnProperty(sound_name))
+            load_sound(game.sounds[sound_name], sound_name);
+
     (function draw_loop() {
         draw_game(game, context);
         // TODO: add Polyfill
