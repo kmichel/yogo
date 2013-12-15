@@ -250,7 +250,7 @@ function draw_text(game, text, context) {
             game.grid.minor_spacing * 2 + .5, game.height - game.grid.minor_spacing * 3 + .5,
             game.width - game.grid.minor_spacing * 4, game.grid.minor_spacing * 2);
         context.stroke();
-        context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab' monospace";
+        context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab'";
         context.textAlign = 'center';
         context.textBaseline = 'alphabetic';
         context.fillStyle = 'rgba(0, 0, 0, ' + (0.8 * opacity) + ')';
@@ -281,7 +281,7 @@ function draw_buttons(game, context) {
 function draw_restart(game, context) {
     if (game.state == 'level_failed') {
         draw_box(140, 180, 320, 40, 1.0, null, context);
-        context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab' monospace";
+        context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab'";
         context.textAlign = 'center';
         context.textBaseline = 'alphabetic';
         context.fillStyle = 'rgba(0, 0, 0, ' + (0.8) + ')';
