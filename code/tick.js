@@ -1,5 +1,4 @@
 function tick_game(game) {
-    tick_game_state(game);
     tick_player(game, game.player);
     tick_list(tick_footstep, game, game.footsteps.list);
     tick_list(tick_pulse, game, game.pulses.list);
@@ -9,8 +8,7 @@ function tick_game(game) {
     update_segments(game.barriers, game.bots);
     tick_hints(game, game.hints);
     tick_exit(game, game.exit);
-    game.tick += 1;
-
+    tick_game_state(game);
 }
 
 function tick_list(callback, game, list) {
@@ -24,6 +22,14 @@ function tick_list(callback, game, list) {
 }
 
 function tick_game_state(game) {
+    if (game.keys.restart && !game.has_just_started) {
+        init_level(game, game.levels[game.current_level]);
+        game.has_just_started = true;
+        return;
+    }
+    if (game.has_just_started && !game.keys.restart) {
+        game.has_just_started = false;
+    }
     if (game.state == 'level_complete') {
         if (game.pulses.list.length == 0) {
             // TODO: use a more explicit state in player
@@ -40,6 +46,7 @@ function tick_game_state(game) {
         if (game.player.state == 'dead')
             game.state = 'level_failed';
     }
+    game.tick += 1;
 }
 
 function tick_player(game, player) {

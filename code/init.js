@@ -36,10 +36,18 @@ function init_level(game, level) {
     game.state = 'playing';
     game.player.state = 'alive';
     game.player.can_shoot = true;
+    game.player.nearest_bot_alive = null;
+    game.player.was_aiming = false;
+    game.player.was_moving = false;
+    game.player.footsteps_chain = 0;
+    game.player.distance_since_last_footstep = 0;
+    game.player.age = 0;
     game.exit.state = 'closed';
     game.player.position = {x: level.player.position.x, y: level.player.position.y};
     game.exit.position = {x: level.exit.position.x, y: level.exit.position.y};
+    game.pulses.list = [];
     game.hints.list = [];
+    game.footsteps.list = [];
     for (var i = 0; i < level.hints.length; ++i)
         game.hints.list.push(level.hints[i]);
     game.bots.list = [];
@@ -95,10 +103,11 @@ function init_game(game, canvas_id) {
 
     function get_key_handler(state) {
         return function (event) {
-            if (game.key_map.hasOwnProperty(event.keyCode)) {
-                game.keys[game.key_map[event.keyCode]] = state;
-                event.preventDefault();
-            }
+            if (!event.ctrlKey && !event.metaKey)
+                if (game.key_map.hasOwnProperty(event.keyCode)) {
+                    game.keys[game.key_map[event.keyCode]] = state;
+                    event.preventDefault();
+                }
         }
     }
 

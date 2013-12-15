@@ -5,6 +5,7 @@ var yogo = {
     height: 400,
     margin: 85,
     state: 'playing',
+    has_just_started: false,
     current_level: 0,
     levels: [],
     text: "",
@@ -37,7 +38,8 @@ var yogo = {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        82: 'restart'
     },
     keys: {
         shift: false,
@@ -45,7 +47,8 @@ var yogo = {
         left: false,
         up: false,
         right: false,
-        down: false
+        down: false,
+        restart: false
     },
     player: {
         can_shoot: true,
