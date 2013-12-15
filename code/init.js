@@ -79,7 +79,9 @@ function init_game(game, canvas_id) {
     var canvas = document.getElementById(canvas_id);
     var context = canvas.getContext('2d');
     if (!context.setLineDash)
-        context.setLineDash = function () {
+        context.setLineDash = function (pattern) {
+            //noinspection JSUnusedGlobalSymbols
+            this.mozDash = pattern;
         };
 
     init_grid_cells(game);

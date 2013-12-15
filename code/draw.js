@@ -81,6 +81,7 @@ function draw_player(player, context) {
         context.lineCap = 'round';
         context.setLineDash([1, 6]);
         context.lineDashOffset = -player.age / 5;
+        context.mozDashOffset = -player.age / 5;
         context.beginPath();
         var dx = player.nearest_bot_alive.position.x - player.position.x;
         var dy = player.nearest_bot_alive.position.y - player.position.y;
