@@ -266,15 +266,21 @@ function tick_footstep(game, footstep) {
 }
 
 function tick_hints(game, hints) {
+    var bots_left = 0;
+    for (var i = 0; i < game.bots.list.length; ++i)
+        if (game.bots.list[i].state != 'dead')
+            bots_left += 1;
     var p_x = game.player.position.x;
     var p_y = game.player.position.y;
     game.text = null;
-    for (var i = 0; i < hints.list.length; ++i) {
+    for (i = 0; i < hints.list.length; ++i) {
         var hint = hints.list[i];
-        if (p_x >= hint.rect.x && p_x <= hint.rect.x + hint.rect.width
-            && p_y >= hint.rect.y && p_y <= hint.rect.y + hint.rect.height) {
-            game.text = hint.text;
-        }
+        if (hint.min_bots_left == undefined || bots_left >= hint.min_bots_left)
+            if (hint.max_bots_left == undefined || bots_left <= hint.max_bots_left)
+                if (p_x >= hint.rect.x && p_x <= hint.rect.x + hint.rect.width
+                    && p_y >= hint.rect.y && p_y <= hint.rect.y + hint.rect.height) {
+                    game.text = hint.text;
+                }
     }
 }
 
