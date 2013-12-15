@@ -73,8 +73,8 @@ function tick_player(game, player) {
             var inverse_length = 1 / Math.sqrt(x * x + y * y);
             player.direction.x = x * inverse_length;
             player.direction.y = y * inverse_length;
-            player.position.x += x * inverse_length * speed;
-            player.position.y += y * inverse_length * speed;
+            player.position.x = Math.min(game.width + 0.5, Math.max(0.5, player.position.x + x * inverse_length * speed));
+            player.position.y = Math.min(game.height + 0.5, Math.max(0.5, player.position.y + y * inverse_length * speed));
             player.distance_since_last_footstep += speed;
             is_moving = true;
         }
