@@ -1,4 +1,5 @@
 function tick_game(game) {
+    tick_game_state(game);
     tick_player(game, game.player);
     tick_list(tick_footstep, game, game.footsteps.list);
     tick_list(tick_pulse, game, game.pulses.list);
@@ -22,6 +23,18 @@ function tick_list(callback, game, list) {
     }
 }
 
+function tick_game_state(game) {
+    if (game.state == 'level_complete') {
+        if (game.pulses.list.length == 0) {
+            // TODO: use a more explicit state in player
+            if (game.player.position.x == game.exit.position.x && game.player.position.y == game.exit.position.y) {
+                game.current_level += 1;
+                init_level(game, game.levels[game.current_level]);
+            }
+        }
+    }
+}
+
 function tick_player(game, player) {
     if (game.state == 'level_complete') {
         var dx = game.exit.position.x - player.position.x;
@@ -35,69 +48,68 @@ function tick_player(game, player) {
                 player.position.x = game.exit.position.x;
                 player.position.y = game.exit.position.y;
                 play_sound('level_complete');
-                game.current_level += 1;
-                init_level(game, game.levels[game.current_level]);
             }
         }
-    }
-    if (player.state == 'alive' && game.state == 'playing') {
-        if (player.can_shoot)
-            player.nearest_bot_alive = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
-        if (player.was_aiming && !game.keys.space && player.can_shoot) {
-            if (player.nearest_bot_alive) {
-                player.can_shoot = false;
-                game.lasers.list.push({
-                    start: {x: game.player.position.x, y: game.player.position.y},
-                    stop: {x: player.nearest_bot_alive.position.x, y: player.nearest_bot_alive.position.y},
-                    age: 0
-                });
-                play_sound('laser');
-                player.nearest_bot_alive.state = 'dying';
-                player.nearest_bot_alive = null;
+    } else {
+        if (player.state == 'alive' && game.state == 'playing') {
+            if (player.can_shoot)
+                player.nearest_bot_alive = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
+            if (player.was_aiming && !game.keys.space && player.can_shoot) {
+                if (player.nearest_bot_alive) {
+                    player.can_shoot = false;
+                    game.lasers.list.push({
+                        start: {x: game.player.position.x, y: game.player.position.y},
+                        stop: {x: player.nearest_bot_alive.position.x, y: player.nearest_bot_alive.position.y},
+                        age: 0
+                    });
+                    play_sound('laser');
+                    player.nearest_bot_alive.state = 'dying';
+                    player.nearest_bot_alive = null;
+                }
             }
-        }
-        player.was_aiming = game.keys.space;
-        var x = 0;
-        var y = 0;
-        if (game.keys.left)
-            x -= 1;
-        if (game.keys.up)
-            y -= 1;
-        if (game.keys.right)
-            x += 1;
-        if (game.keys.down)
-            y += 1;
-        var is_moving = false;
-        player.is_running = !game.keys.shift;
-        var speed = player.is_running ? game.player.run_speed : game.player.walk_speed;
-        if (x != 0 || y != 0) {
-            var inverse_length = 1 / Math.sqrt(x * x + y * y);
-            player.direction.x = x * inverse_length;
-            player.direction.y = y * inverse_length;
-            player.position.x = Math.min(game.width + 0.5, Math.max(0.5, player.position.x + x * inverse_length * speed));
-            player.position.y = Math.min(game.height + 0.5, Math.max(0.5, player.position.y + y * inverse_length * speed));
-            player.distance_since_last_footstep += speed;
-            is_moving = true;
-        }
-        if (is_moving && !player.was_moving)
-            player.footsteps_chain = 0;
-        if (player.is_running) {
-            if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving && player.footsteps_chain == 0)) {
-                play_sound(player.footsteps_chain % 2 == 0 ? 'footstep_1' : 'footstep_2');
-                game.footsteps.list.push({
-                    position: {x: player.position.x, y: player.position.y},
-                    radius: game.footsteps.start_radius,
-                    age: 0
-                });
-                player.footsteps_chain += 1;
-                player.distance_since_last_footstep = 0;
+            player.was_aiming = game.keys.space;
+            var x = 0;
+            var y = 0;
+            if (game.keys.left)
+                x -= 1;
+            if (game.keys.up)
+                y -= 1;
+            if (game.keys.right)
+                x += 1;
+            if (game.keys.down)
+                y += 1;
+            var is_moving = false;
+            player.is_running = !game.keys.shift;
+            var speed = player.is_running ? game.player.run_speed : game.player.walk_speed;
+            if (x != 0 || y != 0) {
+                var inverse_length = 1 / Math.sqrt(x * x + y * y);
+                player.direction.x = x * inverse_length;
+                player.direction.y = y * inverse_length;
+                player.position.x = Math.min(game.width + 0.5, Math.max(0.5, player.position.x + x * inverse_length * speed));
+                player.position.y = Math.min(game.height + 0.5, Math.max(0.5, player.position.y + y * inverse_length * speed));
+                player.distance_since_last_footstep += speed;
+                is_moving = true;
             }
-        } else {
-            // Allow 'run-toggling' but make it dangerous
-            player.distance_since_last_footstep *= 0.9;
+            if (is_moving && !player.was_moving)
+                player.footsteps_chain = 0;
+            if (player.is_running) {
+                if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving && player.footsteps_chain == 0)) {
+                    play_sound(player.footsteps_chain % 2 == 0 ? 'footstep_1' : 'footstep_2');
+                    game.footsteps.list.push({
+                        position: {x: player.position.x, y: player.position.y},
+                        radius: game.footsteps.start_radius,
+                        age: 0
+                    });
+                    player.footsteps_chain += 1;
+                    player.distance_since_last_footstep = 0;
+                }
+            } else {
+                // Allow 'run-toggling' but make it dangerous
+                player.distance_since_last_footstep *= 0.9;
+            }
+            player.was_moving = is_moving;
+            player.age += 1;
         }
-        player.was_moving = is_moving;
-        player.age += 1;
     }
 }
 
