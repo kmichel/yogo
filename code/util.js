@@ -150,3 +150,11 @@ function update_segments(barriers, bots) {
 function remove_item(array, item) {
     array.splice(array.indexOf(item), 1);
 }
+
+function count_bots_alive(bots) {
+    var bots_left = 0;
+    for (var i = 0; i < bots.list.length; ++i)
+        if (bots.list[i].state != 'dead')
+            bots_left += 1;
+    return bots_left;
+}

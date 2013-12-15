@@ -32,6 +32,13 @@ function tick_game_state(game) {
                 init_level(game, game.levels[game.current_level]);
             }
         }
+    } else if (game.state == 'playing') {
+        if (game.pulses.list.length == 0)
+            if (game.player.can_shoot == false)
+                if (count_bots_alive(game.bots) > 0)
+                    game.state = 'level_failed';
+        if (game.player.state == 'dead')
+            game.state = 'level_failed';
     }
 }
 
@@ -50,8 +57,8 @@ function tick_player(game, player) {
                 play_sound('level_complete');
             }
         }
-    } else {
-        if (player.state == 'alive' && game.state == 'playing') {
+    } else if (game.state == 'playing') {
+        if (player.state == 'alive') {
             if (player.can_shoot)
                 player.nearest_bot_alive = get_nearest_bot_alive(game.player.position, game.bots, player.shooting_radius);
             if (player.was_aiming && !game.keys.space && player.can_shoot) {
@@ -278,10 +285,7 @@ function tick_footstep(game, footstep) {
 }
 
 function tick_hints(game, hints) {
-    var bots_left = 0;
-    for (var i = 0; i < game.bots.list.length; ++i)
-        if (game.bots.list[i].state != 'dead')
-            bots_left += 1;
+    var bots_left = count_bots_alive(game.bots);
     var p_x = game.player.position.x;
     var p_y = game.player.position.y;
     game.text = null;
