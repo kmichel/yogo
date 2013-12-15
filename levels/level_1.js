@@ -5,12 +5,12 @@ yogo.levels.push({
             rect: {x: 0, y: 0, width: 80, height: 401}
         },
         {
-            text: "Use arrows to reach the exit.",
-            rect: {x: 80, y: 0, width: 360, height: 401}
+            text: "Use arrows or WASD keys to reach the exit.",
+            rect: {x: 80, y: 0, width: 340, height: 401}
         },
         {
             text: "Almost there...",
-            rect: {x: 440, y: 0, width: 100, height: 401}
+            rect: {x: 420, y: 0, width: 100, height: 401}
         },
         {
             text: "Too far !",

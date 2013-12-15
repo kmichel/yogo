@@ -44,7 +44,16 @@ var yogo = {
         38: 'up',
         39: 'right',
         40: 'down',
-        82: 'restart'
+        82: 'restart',
+        // AZERTY
+        90: 'up',
+        81: 'left',
+        68: 'right',
+        83: 'down',
+        // QWERTY
+        87: 'up',
+        65: 'left'
+
     },
     keys: {
         shift: false,
