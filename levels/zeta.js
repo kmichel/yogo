@@ -1,5 +1,9 @@
 yogo.levels.push({
     hints: [
+        {
+            text: "Don't panic",
+            rect: {x: 0, y: 0, width: 60, height: 60}
+        }
     ],
     player: {
         position: {x: 20.5, y: 20.5}
