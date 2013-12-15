@@ -235,7 +235,7 @@ function draw_text(game, text, context) {
     if (text) {
         var opacity = Math.min(1, Math.max(0.1, 0.02 * ((game.height - game.grid.minor_spacing * 3) - game.player.position.y)));
         context.strokeStyle = 'rgba(255, 255, 255,' + (0.1 * opacity) + ')';
-        context.fillStyle = 'rgba(0, 0, 0, ' + (0.3 * opacity) + ')';
+        context.fillStyle = 'rgba(0, 0, 0, ' + (0.35 * opacity) + ')';
         context.lineWidth = 1;
         context.beginPath();
         context.rect(
@@ -246,6 +246,8 @@ function draw_text(game, text, context) {
         context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab' monospace";
         context.textAlign = 'center';
         context.textBaseline = 'alphabetic';
+        context.fillStyle = 'rgba(0, 0, 0, ' + (0.8 * opacity) + ')';
+        context.fillText(text, game.width * .5, game.height - game.grid.minor_spacing * 1.75 + 1);
         context.fillStyle = 'rgba(255, 255, 255,' + (0.7 * opacity) + ')';
         context.fillText(text, game.width * .5, game.height - game.grid.minor_spacing * 1.75);
     }
