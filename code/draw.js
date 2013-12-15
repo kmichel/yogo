@@ -11,6 +11,7 @@ function draw_game(game, context) {
     draw_player(game.player, context);
     draw_bots(game.bots, context);
     draw_exit(game.exit, context);
+    draw_text(game, game.text, context);
     context.translate(-game.margin, -game.margin);
 }
 
@@ -228,4 +229,24 @@ function draw_exit(exit, context) {
     context.beginPath();
     context.arc(exit.position.x, exit.position.y, exit.radius, 0, 2 * Math.PI);
     context.stroke();
+}
+
+function draw_text(game, text, context) {
+    if (text) {
+        var opacity = Math.min(1, Math.max(0.1, 0.02 * ((game.height - game.grid.minor_spacing * 3) - game.player.position.y)));
+        context.strokeStyle = 'rgba(255, 255, 255,' + (0.1 * opacity) + ')';
+        context.fillStyle = 'rgba(0, 0, 0, ' + (0.3 * opacity) + ')';
+        context.lineWidth = 1;
+        context.beginPath();
+        context.rect(
+            game.grid.minor_spacing * 2 - .5, game.height - game.grid.minor_spacing * 3 - .5,
+            game.width - game.grid.minor_spacing * 4 + 1, game.grid.minor_spacing * 2 + 1);
+        context.fill();
+        context.stroke();
+        context.font = game.grid.minor_spacing * .8 + "px 'Roboto Slab' monospace";
+        context.textAlign = 'center';
+        context.textBaseline = 'alphabetic';
+        context.fillStyle = 'rgba(255, 255, 255,' + (0.7 * opacity) + ')';
+        context.fillText(text, game.width * .5, game.height - game.grid.minor_spacing * 1.75);
+    }
 }

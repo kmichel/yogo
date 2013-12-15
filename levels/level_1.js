@@ -1,4 +1,5 @@
 yogo.levels.push({
+    text: "Use arrows to reach the exit.",
     player: {
         position: {x: 20.5, y: 200.5}
     },

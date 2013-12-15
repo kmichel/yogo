@@ -1,4 +1,5 @@
 yogo.levels.push({
+    text: "Congratulation, you're done :)",
     player: {
         position: {x: 300.5, y: 200.5}
     },

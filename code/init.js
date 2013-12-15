@@ -34,6 +34,7 @@ function init_bot(game, bot) {
 
 function init_level(game, level) {
     game.state = 'playing';
+    game.text = level.text;
     game.player.state = 'alive';
     game.exit.state = 'closed';
     game.player.position = {x: level.player.position.x, y: level.player.position.y};
