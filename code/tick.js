@@ -59,15 +59,17 @@ function tick_player(game, player) {
             player.distance_since_last_footstep += speed;
             is_moving = true;
         }
+        if (is_moving && !player.was_moving)
+            player.footsteps_chain = 0;
         if (player.is_running) {
-            if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving)) {
-                play_sound(game.footsteps.sound_cycle == 0 ? 'footstep_1' : 'footstep_2');
-                game.footsteps.sound_cycle = (game.footsteps.sound_cycle + 1) % 2;
+            if (player.distance_since_last_footstep > player.footstep_interval || (player.was_moving && !is_moving && player.footsteps_chain == 0)) {
+                play_sound(player.footsteps_chain % 2 == 0 ? 'footstep_1' : 'footstep_2');
                 game.footsteps.list.push({
                     position: {x: player.position.x, y: player.position.y},
                     radius: game.footsteps.start_radius,
                     age: 0
                 });
+                player.footsteps_chain += 1;
                 player.distance_since_last_footstep = 0;
             }
         } else {

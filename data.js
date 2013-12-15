@@ -52,6 +52,7 @@ var yogo = {
         walk_color: 'rgba(156, 209, 227, 0.5)',
         state: 'alive',
         footstep_interval: 20,
+        footsteps_chain: 0,
         distance_since_last_footstep: 0,
         was_moving: false,
         was_aiming: false,
@@ -141,7 +142,6 @@ var yogo = {
         start_radius: 0,
         end_radius: 30,
         max_age: 20,
-        sound_cycle: 0,
         list: []
     }
 };
