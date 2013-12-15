@@ -133,8 +133,10 @@ function init_game(game, canvas_id) {
     document.addEventListener('keyup', get_key_handler(false));
 
     canvas.addEventListener('mousemove', function (event) {
-        game.cursor.position.x = event.offsetX - game.margin - 2;
-        game.cursor.position.y = event.offsetY - game.margin - 2;
+        var x = event.offsetX !== undefined ? event.offsetX : event.layerX;
+        var y = event.offsetY !== undefined ? event.offsetY : event.layerY;
+        game.cursor.position.x = x - game.margin - 2;
+        game.cursor.position.y = y - game.margin - 2;
     });
 
     canvas.addEventListener('mousedown', function (event) {
