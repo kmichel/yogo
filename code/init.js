@@ -35,6 +35,7 @@ function init_bot(game, bot) {
 function init_level(game, level) {
     game.state = 'playing';
     game.player.state = 'alive';
+    game.player.can_shoot = true;
     game.exit.state = 'closed';
     game.player.position = {x: level.player.position.x, y: level.player.position.y};
     game.exit.position = {x: level.exit.position.x, y: level.exit.position.y};
