@@ -72,6 +72,7 @@ function init_level(game, level) {
         init_bot(game, game.bots.list[i]);
     update_segments(game.barriers, game.bots);
     set_cookie('yogo_level', game.current_level, 100);
+    set_cookie('yogo_max_level', game.max_level, 100);
 }
 
 function init_game(game, canvas_id) {
@@ -85,6 +86,9 @@ function init_game(game, canvas_id) {
     game.current_level = parseInt(get_cookie('yogo_level', '0'));
     if (isNaN(game.current_level) || game.current_level < 0 || game.current_level >= game.levels.length)
         game.current_level = 0;
+    game.max_level = parseInt(get_cookie('yogo_max_level', '0'));
+    if (isNaN(game.max_level) || game.max_level < 0 || game.max_level >= game.levels.length)
+        game.max_level = 0;
     init_level(game, game.levels[game.current_level]);
 
     for (var sound_name in game.sounds)

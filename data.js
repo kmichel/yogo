@@ -7,6 +7,7 @@ var yogo = {
     state: 'playing',
     has_just_started: false,
     current_level: 0,
+    max_level: 0,
     levels: [],
     text: "",
     hints: {
@@ -142,8 +143,11 @@ var yogo = {
         icon_toggle_sound_off: {
             url: 'images/icon_toggle_sound_off.png'
         },
-        icon_select_level: {
-            url: 'images/icon_select_level.png'
+        icon_previous_level: {
+            url: 'images/icon_previous_level.png'
+        },
+        icon_next_level: {
+            url: 'images/icon_next_level.png'
         }
     },
     buttons: {
@@ -161,10 +165,16 @@ var yogo = {
                 rect: {x: 600, y: 40, width: 40, height: 40}
             },
             {
-                action: 'select_level',
-                image: 'icon_select_level',
+                action: 'previous_level',
+                image: 'icon_previous_level',
                 state: 'resting',
                 rect: {x: 600, y: 80, width: 40, height: 40}
+            },
+            {
+                action: 'next_level',
+                image: 'icon_next_level',
+                state: 'resting',
+                rect: {x: 600, y: 120, width: 40, height: 40}
             }
         ]
     }

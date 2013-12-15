@@ -36,6 +36,7 @@ function tick_game_state(game) {
             // TODO: use a more explicit state in player
             if (game.player.position.x == game.exit.position.x && game.player.position.y == game.exit.position.y) {
                 game.current_level += 1;
+                game.max_level = Math.max(game.max_level, game.current_level);
                 init_level(game, game.levels[game.current_level]);
             }
         }
@@ -328,7 +329,11 @@ function tick_exit(game, exit) {
 }
 
 function tick_button(game, button) {
-    if (is_point_in_rect(game.cursor.position, button.rect)) {
+    if (button.action == 'previous_level' && game.current_level == 0)
+        button.state = 'disabled';
+    else if (button.action == 'next_level' && game.current_level == game.max_level)
+        button.state = 'disabled';
+    else if (is_point_in_rect(game.cursor.position, button.rect)) {
         if (game.cursor.pressed)
             button.state = 'pressed';
         else {
@@ -338,8 +343,12 @@ function tick_button(game, button) {
                 else if (button.action == 'toggle_sound') {
                     set_sound_active(!is_sound_active());
                     button.image = is_sound_active() ? 'icon_toggle_sound' : 'icon_toggle_sound_off';
-                } else if (button.action == 'select_level') {
-                    // TODO
+                } else if (button.action == 'previous_level') {
+                    game.current_level -= 1;
+                    init_level(game, game.levels[game.current_level]);
+                } else if (button.action == 'next_level') {
+                    game.current_level += 1;
+                    init_level(game, game.levels[game.current_level]);
                 }
             }
             button.state = 'hovered';

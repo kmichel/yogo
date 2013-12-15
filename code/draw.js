@@ -262,11 +262,13 @@ function draw_buttons(game, context) {
     var is_any_button_hovered = false;
     for (var i = 0; i < game.buttons.list.length; ++i) {
         var button = game.buttons.list[i];
-        if (button.state != 'resting')
-            is_any_button_hovered = true;
-        draw_box(
-            button.rect.x, button.rect.y, button.rect.width, button.rect.height,
-            button.state == 'resting' ? 0.1 : 1, game.images[button.image], context);
+        if (button.state != 'disabled') {
+            if (button.state != 'resting')
+                is_any_button_hovered = true;
+            draw_box(
+                button.rect.x, button.rect.y, button.rect.width, button.rect.height,
+                button.state == 'resting' ? 0.1 : 1, game.images[button.image], context);
+        }
     }
     var expected_cursor = is_any_button_hovered ? 'pointer' : null;
     // This reduces styles recalculation
