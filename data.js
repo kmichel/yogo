@@ -53,7 +53,7 @@ var yogo = {
         direction: {x: 0, y: 0},
         walk_speed: 0.5,
         run_speed: 2,
-        radius: 6,
+        radius: 6.001,
         shooting_radius: 120,
         direction_radius: 10,
         aim_color: 'rgba(255, 255, 255, 0.6)',
@@ -76,7 +76,7 @@ var yogo = {
     },
     bots: {
         color: '#a45300',
-        radius: 6,
+        radius: 6.001,
         death_animation_length: 20,
         shooting_zone: {
             color: 'rgba(255, 255, 255, 0.1)',
