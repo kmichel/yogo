@@ -323,7 +323,7 @@ function tick_exit(game, exit) {
             play_sound('exit_open');
         exit.state = 'open';
     }
-    if (exit.state == 'open' && is_distance_less_than(exit.position, game.player.position, exit.radius - game.player.radius + 2)) {
+    if (exit.state == 'open' && game.player.state == 'alive' && is_distance_less_than(exit.position, game.player.position, exit.radius - game.player.radius)) {
         game.state = 'level_complete';
     }
 }
