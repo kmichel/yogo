@@ -127,8 +127,10 @@ if (typeof(webkitAudioContext) !== "undefined") {
         });
     }
 }
-
-if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "undefined") {
+if ((typeof(waapisimForceSim) !== "undefined" && waapisimForceSim)
+    || (typeof(AudioContext) !== "undefined" && typeof(AudioContext.prototype.createOscillator) === "undefined" && (typeof(waapisimForceSimWhenLackOsc) === "undefined" || (typeof(waapisimForceSimWhenLackOsc) !== "undefined" && waapisimForceSimWhenLackOsc)))
+    || (typeof(webkitAudioContext) === "undefined" && typeof(waapisimForceSimWhenNotWebkit) !== "undefined" && waapisimForceSimWhenNotWebkit)
+    || (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "undefined")) {
     waapisimSampleRate = 44100;
     waapisimAudioIf = 0;
     waapisimBufSize = 1024;
@@ -211,7 +213,26 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
                             this.duration = this.length / this.sampleRate;
                             var v0, v1;
                             for (i = 0, j = 0; i < this.length; ++i) {
-                                if (wavbits == 16) {
+                                if (wavbits == 24) {
+                                    if (wavch == 2) {
+                                        v0 = inbuf[idx + j + 9] + (inbuf[idx + j + 10] << 8);
+                                        v1 = inbuf[idx + j + 12] + (inbuf[idx + j + 13] << 8);
+                                        if (v0 >= 32768) v0 = v0 - 65536;
+                                        if (v1 >= 32768) v1 = v1 - 65536;
+                                        if (mixtomono === true)
+                                            v0 = v1 = (v0 + v1) * 0.5;
+                                        this.buf[0][i] = v0 / 32768;
+                                        this.buf[1][i] = v1 / 32768;
+                                        j += 6;
+                                    }
+                                    else {
+                                        v = inbuf[idx + j + 9] + (inbuf[idx + j + 10] << 8);
+                                        if (v >= 32768) v = v - 65536;
+                                        this.buf[0][i] = this.buf[1][i] = v / 32768;
+                                        j += 3;
+                                    }
+                                }
+                                else if (wavbits == 16) {
                                     if (wavch == 2) {
                                         v0 = inbuf[idx + j + 8] + (inbuf[idx + j + 9] << 8);
                                         v1 = inbuf[idx + j + 10] + (inbuf[idx + j + 11] << 8);
@@ -318,10 +339,14 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
     waapisimAddFlashObj = function () {
         var div = document.createElement("DIV");
         div.setAttribute("id", "WAAPISIMFLASHOBJ");
-        div.setAttribute("style", "background:#ff00ff;positoin:static;");
+        div.setAttribute("style", "background:#ff00ff;position:static;");
         var body = document.getElementsByTagName("BODY");
         body[0].appendChild(div);
         document.getElementById("WAAPISIMFLASHOBJ").innerHTML = "<div style='position:fixed;right:0px;bottom:0px'> <object id='waapisim_swf' CLASSID='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' CODEBASE='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,0,0' width=150 height=20><param name=movie value='" + waapisimSwfPath + "'><PARAM NAME=bgcolor VALUE=#FFFFFF><PARAM NAME=LOOP VALUE=false><PARAM NAME=quality VALUE=high><param name='allowScriptAccess' value='always'><embed src='" + waapisimSwfPath + "' width=150 height=20 bgcolor=#FFFFFF loop=false quality=high pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash' type='application/x-shockwave-flash' allowScriptAccess='always'></embed></object></div>";
+        if (typeof(document.getElementById("waapisim_swf").SetReturnValue) === "undefined")
+            document.getElementById("waapisim_swf").SetReturnValue = function (v) {
+                document.getElementById("waapisim_swf").impl.SetReturnValue(v);
+            };
     };
     waapisimFlashOffset = function (pos) {
         waapisimUpdateCurrentTime(pos / 1000);
@@ -336,8 +361,7 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         for (l = waapisimOutBufSize * 2, i = 0; i < l; ++i) {
             var v = (waapisimOutBuf[i] * 16384 + 32768) | 0;
             if (isNaN(v)) v = 32768;
-            if (v > 49152) v = 49152;
-            if (v < 16384) v = 16384;
+            v = Math.min(49152, Math.max(16384, v));
             s += String.fromCharCode(v);
         }
         return s;
@@ -408,8 +432,8 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
             else
                 errorCallback();
         };
-        this.createWaveTable = function (real, imag) {
-            return new waapisimWaveTable(real, imag);
+        this.createPeriodicWave = this.createWaveTable = function (real, imag) {
+            return new waapisimPeriodicWave(real, imag);
         };
         this._SortNode = function () {
             var i, j, k, n;
@@ -475,7 +499,7 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         this.setVelocity = function (x, y, z) {
         };
     };
-    waapisimWaveTable = function (real, imag) {
+    waapisimPeriodicWave = function (real, imag) {
         var n = 4096;
         var ar = new Array(n);
         var ai = new Array(n);
@@ -676,6 +700,8 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         this._actualLoopStart = 0;
         this._actualLoopEnd = 0;
         this.start = this.noteOn = this.noteGrainOn = function (w, off, dur) {
+            if (this.buffer === null)
+                return;
             this.playbackState = 1;
             this._whenstart = w;
             if (off > 0)
@@ -795,10 +821,10 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         this.context = ctx;
         this.playbackState = 0;
         this.type = 0;
-        this.frequency = new waapisimAudioParam(ctx, this, 10, 24000, 350);
-        this.detune = new waapisimAudioParam(ctx, this, -1200, 1200, 0);
-        this.Q = new waapisimAudioParam(ctx, this, 0.0001, 1000, 1);
-        this.gain = new waapisimAudioParam(ctx, this, -40, 40, 0);
+        this.frequency = new waapisimAudioParam(ctx, this, 10, 24000, 350, 0.5);
+        this.detune = new waapisimAudioParam(ctx, this, -4800, 4800, 0, 0.5);
+        this.Q = new waapisimAudioParam(ctx, this, 0.0001, 1000, 1, 0.5);
+        this.gain = new waapisimAudioParam(ctx, this, -40, 40, 0, 0.5);
         this._a1 = this._a2 = 0;
         this._b0 = this._b1 = this._b2 = 0;
         this._x1l = this._x1r = this._x2l = this._x2r = 0;
@@ -1040,12 +1066,13 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         this.context = ctx;
         this.type = 0;
         this._wavtable = null;
-        this.frequency = new waapisimAudioParam(ctx, this, 1, 20000, 440);
-        this.detune = new waapisimAudioParam(ctx, this, -1200, 1200, 0);
+        this.frequency = new waapisimAudioParam(ctx, this, 1, 20000, 440, 0.9995);
+        this.detune = new waapisimAudioParam(ctx, this, -4800, 4800, 0, 0.9995);
         this.playbackState = 0;
         this._phase = 0.5;
         this._whenstart = 0;
         this._whenstop = Number.MAX_VALUE;
+        this._init = 0;
         this.start = this.noteOn = function (w) {
             this._whenstart = w;
             this.playbackState = 1;
@@ -1054,12 +1081,17 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         this.stop = this.noteOff = function (w) {
             this._whenstop = w;
         };
-        this.setWaveTable = function (tab) {
+        this.setPeriodicWave = this.setWaveTable = function (tab) {
             this.type = 4;
             this._wavtable = tab;
         };
         this._Process = function () {
             var i;
+            if (this._init == 0) {
+                this.frequency.Init();
+                this.detune.Init();
+                this._init = 1;
+            }
             this.frequency._Process();
             this.detune._Process();
             if (this.playbackState == 1 && this.context.currentTime >= this._whenstart)
@@ -1393,15 +1425,23 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
             var inbuf = this._nodein[0].inbuf.buf;
             var nh = (waapisimBufSize * 0.5) | 0;
             var i, j, k, l, px, v0, v1;
+
             if (this.buffer !== null) {
-                var kbuf = [];
-                for (i = 0; i < 4; ++i)
-                    kbuf[i] = new waapisimAudioBuffer(2, waapisimBufSize, 44100);
                 if (this.buffer != this._analyzed) {
+                    var kbuf = [];
+                    for (i = 0; i < 4; ++i)
+                        kbuf[i] = new waapisimAudioBuffer(2, waapisimBufSize, 44100);
                     this._scale = 1;
                     if (this.normalize)
                         this._scale = this._Normalize(this.buffer);
                     var len = this.buffer.length;
+                    for (i = len - 1; i; --i) {
+                        if (Math.abs(this.buffer.buf[0][i]) > 1e-3)
+                            break;
+                        if (Math.abs(this.buffer.buf[1][i]) > 1e-3)
+                            break;
+                    }
+                    len = i + 1;
                     for (i = 0, px = 0; i < this._tapsize; ++i) {
                         var x = (i * len / this._tapsize) | 0;
                         var sz = x - px;
@@ -1442,7 +1482,6 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
                     this._Fft(waapisimBufSize, this._kernel.buf[1]);
                     this._analyzed = this.buffer;
                 }
-
                 this._Fft(waapisimBufSize, inbuf[0]);
                 this._Fft(waapisimBufSize, inbuf[1]);
                 this._sum[0][0][0] = this._sum[1][0][0] = this._sum[0][1][0] = this._sum[1][1][0] = 0;
@@ -1460,10 +1499,8 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
                     this._sum[1][1][i] = -imag1;
                     this._sum[1][1][j] = imag1;
                 }
-
                 this._Fft2(waapisimBufSize, this._sum[0][0], this._sum[0][1]);
                 this._Fft2(waapisimBufSize, this._sum[1][0], this._sum[1][1]);
-
                 for (i = 0; i < waapisimBufSize; ++i) {
                     var v = (nh - Math.abs(i - nh)) / nh;
                     this._dlybuf.buf[0][this._dlyidx] = this._sum[0][0][i] * v;
@@ -1575,9 +1612,6 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
             var dy = this.py - listener.py;
             var dz = this.pz - listener.pz;
             var d = Math.max(1, Math.sqrt(dx * dx + dy * dy + dz * dz));
-            var rgain = dx - dz;
-            var lgain = -dx - dz;
-            var rl = Math.sqrt(rgain * rgain + lgain * lgain);
             var dgain;
             switch (this.distanceModel) {
                 case "linear":
@@ -1593,15 +1627,41 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
                     dgain = Math.pow(d / this.refDistance, -this.rolloffFactor);
                     break;
             }
-            if (rl === 0)
-                rgain = lgain = Math.sqrt(2) * dgain;
-            else {
-                rgain = rgain / rl;
-                lgain = lgain / rl;
-                var a = Math.sqrt(rgain * rgain + lgain * lgain);
-                rgain = rgain / a * 2 * dgain;
-                lgain = lgain / a * 2 * dgain;
+            var rgain, lgain, tr;
+            if (Math.abs(dz) < 0.001) {
+                lgain = rgain = 1;
             }
+            else {
+                tr = Math.atan(dx / dz);
+                if (dz <= 0) {
+                    rgain = -tr + Math.PI * 0.5;
+                    lgain = tr + Math.PI * 0.5;
+                }
+                else {
+                    switch (this.panningModel) {
+                        case 0:
+                        case "equalpower":
+                            rgain = tr + Math.PI * 0.5;
+                            lgain = -tr + Math.PI * 0.5;
+                            break;
+                        default:
+                            if (dx >= 0) {
+                                rgain = tr + Math.PI * 0.5;
+                                lgain = -(-tr + Math.PI * 0.5);
+                            }
+                            else {
+                                rgain = -(tr + Math.PI * 0.5);
+                                lgain = -tr + Math.PI * 0.5;
+                            }
+                    }
+                }
+            }
+            var rl = Math.sqrt(rgain * rgain + lgain * lgain);
+            rgain = rgain / rl;
+            lgain = lgain / rl;
+            var a = Math.sqrt(rgain * rgain + lgain * lgain);
+            rgain = rgain / a * 2 * dgain;
+            lgain = lgain / a * 2 * dgain;
             for (var i = 0; i < waapisimBufSize; ++i)
                 this._nodeout[0].NodeEmit(i, inbuf[0][i] * lgain, inbuf[1][i] * rgain);
             this._nodein[0].NodeClear();
@@ -1678,7 +1738,7 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
             this._nodein[0].NodeClear();
         };
     };
-    waapisimAudioParam = function (ctx, node, min, max, def) {
+    waapisimAudioParam = function (ctx, node, min, max, def, tcon) {
         this.context = ctx;
         this._targettype = 0;
         this.node = node;
@@ -1687,6 +1747,10 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
         this.minValue = min;
         this.maxValue = max;
         this.defaultValue = def;
+        if (typeof(tcon) === "undefined")
+            this.timeconst = 0;
+        else
+            this.timeconst = tcon;
         this.from = [];
         this.inbuf = {};
         this.inbuf.buf = [];
@@ -1770,8 +1834,14 @@ if (typeof(webkitAudioContext) === "undefined" && typeof(AudioContext) === "unde
                 }
             }
         };
+        this.Init = function () {
+            this.computedValue = parseFloat(this.value);
+        }
         this.Get = function (n) {
-            this.computedValue = this.value + (this.inbuf.buf[0][n] + this.inbuf.buf[1][n]) * 0.5;
+            if (this.from.length > 0)
+                this.computedValue = parseFloat(this.value) + (this.inbuf.buf[0][n] + this.inbuf.buf[1][n]) * 0.5;
+            else
+                this.computedValue = this.computedValue * this.timeconst + (1 - this.timeconst) * parseFloat(this.value);
             return this.computedValue;
         };
         this.Clear = function (arate) {
